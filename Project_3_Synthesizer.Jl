@@ -13,12 +13,42 @@ octave = 4
 BPM=200
 BPS=BPM/60
 QuarterSamples=S/BPS
+Notetype= 1
+function Flute_audio(midi::Int64)
+    freq =(440 * 2^((midi-69)/12)) * 2^(float(octave) - 4) # compute frequency from midi number - FIXED!
+    f= [1, 3, 5, 7] *freq
+    N = Int(Notetype * S / BPS) # 0.5 sec
+    t = (0:N-1)/S # time samples: t = n/S
+    c = [1522.4, 611.3, 412.6, 195.7, 66.1 ] # amplitudes
+    f= [1, 2, 3, 4, 5] *freq
+    z = cos.(2π * t * f'*2^(0/12)).+0.03*randn(size(t))
+    x = z * c
+    env = (1 .- exp.(-10*t)) # fast attack; slow decay
+    y = env .* x .*reverse(env)
+    soundsc(y, S)
+    global song = [song; y]
+end
+
+function Clarinet_audio(midi::Int64)
+    freq =(440 * 2^((midi-69)/12)) * 2^(float(octave) - 4) # compute frequency from midi number - FIXED!
+    f= [1, 3, 5, 7] *freq
+    N = Int(1 * S) # 0.5 sec
+    t = (0:N-1)/S # time samples: t = n/S
+    z = sin.(2π * t * f'*2^(0/12)).+0.01*randn(size(t))
+    c = [10, 50, 70, 100] # amplitudes
+    c=c.^(-1)
+    x = z * c
+    env = (1 .- exp.(-10*t)) # fast attack; slow decay
+    env2=(1 .- exp.(-2*t))
+    Clar = env .* x .*reverse(env2)
+    soundsc(Clar, S)# play note so that user can hear it immediately
+    global song = [song; Clar]
+end
 function miditone(midi::Int64) 
     local nsample::Int = floor(QuarterSamples)
-    f =(440 * 2^((midi-69)/12)) * 2^(float(octave) - 4) # compute frequency from midi number - FIXED!
-    x = cos.(2pi*(1:nsample)*f/S) # generate sinusoidal tone
-    sound(x, S) # play note so that user can hear it immediately
-    global song = [song; x] # append note to the (global) song vector
+        x=Flute_audio(midi)
+        #C=Clarinet_audio(midi)
+    # append note to the (global) song vector
     return nothing
 end
 
@@ -99,7 +129,7 @@ end
 
 function end_button_clicked(w) # callback function for "end" button
     println("The end button")
-    sound(song, S) # play the entire song when user clicks "end"
+    soundsc(song, S) # play the entire song when user clicks "end"
     matwrite("/Users/comradereznov/Documents/VS_Code/Engin_100/Project_1/proj1_2.mat", Dict("song" => song); compress=true) # save song to file
 end
 

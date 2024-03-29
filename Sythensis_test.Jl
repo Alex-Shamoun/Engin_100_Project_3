@@ -22,18 +22,32 @@ t = (0:N-1)/S # time samples: t = n/S
 c = [1522.4, 611.3, 412.6, 195.7, 66.1 ] # amplitudes
 # f = [526.205, 1051.5, 1579.7, 2103.2, 2633.1] # frequencies
 f= [1, 2, 3, 4, 5] *526.205
-z = cos.(2π * t * f'*2^(24/12)).+0.1*randn(size(t))
+z = cos.(2π * t * f'*2^(0/12)).+0.1*randn(size(t))
 x = z * c
 env = (1 .- exp.(-10*t)) # fast attack; slow decay
 y = env .* x .*reverse(env)
-soundsc(y, S)
+#soundsc(y, S)
 plot(y)
 
 
 
+#CREATING MODEL OF CLARINET
 
-
-
+S = 44100
+N = Int(1 * S) # 0.5 sec
+t = (0:N-1)/S # time samples: t = n/S
+c = [10, 50, 70, 100] # amplitudes
+# f = [526.205, 1051.5, 1579.7, 2103.2, 2633.1] # frequencies
+f= [1, 3, 5, 7] *440
+z = sin.(2π * t * f'*2^(0/12)).+0.01*randn(size(t))
+c=c.^(-1)
+x = z * c
+env = (1 .- exp.(-10*t)) # fast attack; slow decay
+env2=(1 .- exp.(-2*t))
+Clar = env .* x .*reverse(env2)
+soundsc(Clar, S)
+plot(x)
+xlims!(0,500)
 
 # m=N
 
