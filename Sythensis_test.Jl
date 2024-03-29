@@ -36,11 +36,11 @@ plot(y)
 S = 44100
 N = Int(1 * S) # 0.5 sec
 t = (0:N-1)/S # time samples: t = n/S
-c = [10, 50, 70, 100] # amplitudes
+c = [0.9,0.05, 0.4, 0.04, 0.07, 0.03, 0.04] # amplitudes
 # f = [526.205, 1051.5, 1579.7, 2103.2, 2633.1] # frequencies
-f= [1, 3, 5, 7] *440
+f= [1, 2, 3, 4, 5, 6, 7] *440
 z = sin.(2π * t * f'*2^(0/12)).+0.01*randn(size(t))
-c=c.^(-1)
+
 x = z * c
 env = (1 .- exp.(-10*t)) # fast attack; slow decay
 env2=(1 .- exp.(-2*t))

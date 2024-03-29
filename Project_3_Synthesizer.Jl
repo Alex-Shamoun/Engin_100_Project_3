@@ -10,7 +10,7 @@ using MAT
 S = 44100 # sampling rate (samples/second) for this low-fi project
 song = Float32[] # initialize "song" as an empty vector
 octave = 4
-BPM=200
+BPM=120
 BPS=BPM/60
 QuarterSamples=S/BPS
 Notetype= 1
@@ -21,7 +21,7 @@ function Flute_audio(midi::Int64)
     t = (0:N-1)/S # time samples: t = n/S
     c = [1522.4, 611.3, 412.6, 195.7, 66.1 ] # amplitudes
     f= [1, 2, 3, 4, 5] *freq
-    z = cos.(2π * t * f'*2^(0/12)).+0.03*randn(size(t))
+    z = cos.(2π * t * f'*2^(0/12)).+0.02*randn(size(t))
     x = z * c
     env = (1 .- exp.(-10*t)) # fast attack; slow decay
     y = env .* x .*reverse(env)
@@ -31,24 +31,27 @@ end
 
 function Clarinet_audio(midi::Int64)
     freq =(440 * 2^((midi-69)/12)) * 2^(float(octave) - 4) # compute frequency from midi number - FIXED!
-    f= [1, 3, 5, 7] *freq
-    N = Int(1 * S) # 0.5 sec
+    f= [1,2,3,4,5,6,7] *freq
+    N = Int(Notetype * S / BPS) # 0.5 sec
     t = (0:N-1)/S # time samples: t = n/S
     z = sin.(2π * t * f'*2^(0/12)).+0.01*randn(size(t))
-    c = [10, 50, 70, 100] # amplitudes
-    c=c.^(-1)
+    c = [0.9,0.05, 0.4, 0.04, 0.07, 0.03, 0.04]  # amplitudes
     x = z * c
-    env = (1 .- exp.(-10*t)) # fast attack; slow decay
-    env2=(1 .- exp.(-2*t))
+    env = (1 .- exp.(-3t)) # slow attack; slow decay
+    env2=(1 .- exp.(-7*t))
     Clar = env .* x .*reverse(env2)
     soundsc(Clar, S)# play note so that user can hear it immediately
     global song = [song; Clar]
 end
 function miditone(midi::Int64) 
     local nsample::Int = floor(QuarterSamples)
+    Instrument="Flute"
+    if Instrument=="Flute"
         x=Flute_audio(midi)
-        #C=Clarinet_audio(midi)
-    # append note to the (global) song vector
+    elseif Insturment=="Clarinet"
+        C=Clarinet_audio(midi)
+    end
+    #calls the audio function depending on what instrument we are playing
     return nothing
 end
 
