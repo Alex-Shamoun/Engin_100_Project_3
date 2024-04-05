@@ -1,10 +1,10 @@
 using Gtk
-using Sound: sound
+using Sound
 using WAV
 using Plots
 using MAT
-
-
+using MIRT
+using DSP: Windows
 
 # initialize two global variables used throughout
 S = 44100 # sampling rate (samples/second) for this low-fi project
@@ -14,17 +14,29 @@ BPM=120
 BPS=BPM/60
 QuarterSamples=S/BPS
 Notetype= 1
+
+
+
 function Flute_audio(midi::Int64)
+
     freq =(440 * 2^((midi-69)/12)) * 2^(float(octave) - 4) # compute frequency from midi number - FIXED!
-    f= [1, 3, 5, 7] *freq
     N = Int(Notetype * S / BPS) # 0.5 sec
     t = (0:N-1)/S # time samples: t = n/S
     c = [1522.4, 611.3, 412.6, 195.7, 66.1 ] # amplitudes
-    f= [1, 2, 3, 4, 5] *freq
-    z = cos.(2π * t * f'*2^(0/12)).+0.02*randn(size(t))
-    x = z * c
-    env = (1 .- exp.(-10*t)) # fast attack; slow decay
-    y = env .* x .*reverse(env)
+    f= [1, 2, 3, 4, 5] *freq #creating the frequency values
+    z = cos.(2π * t * f') # generating the rough wave
+
+    Noise=30*randn(size(t))
+
+    
+    x = (z * c).+Noise # applying the noise to the wave, and the amplitudes
+
+    duration=BPS*Notetype/4 #duration of note
+    adsr_time = [0,0.1, 0.2, 0.5, 0.6, 0.7, 0.9, 0.95, 1] * duration # time values for the envelope
+    adsr_vals = [0,0.6,  0.9, 0.8,0.7, 0.4, 0.2, 0.05,0] #percentage height values for the envelope
+
+    env = interp1(adsr_time, adsr_vals, t) # !!
+    y = env .* x   
     soundsc(y, S)
     global song = [song; y]
 end
@@ -38,17 +50,18 @@ function Clarinet_audio(midi::Int64)
     c = [0.9,0.05, 0.4, 0.04, 0.07, 0.03, 0.04]  # amplitudes
     x = z * c
     env = (1 .- exp.(-3t)) # slow attack; slow decay
-    env2=(1 .- exp.(-7*t))
+    env2=(1.1 .- exp.(-7*t))
     Clar = env .* x .*reverse(env2)
     soundsc(Clar, S)# play note so that user can hear it immediately
     global song = [song; Clar]
 end
+
 function miditone(midi::Int64) 
     local nsample::Int = floor(QuarterSamples)
     Instrument="Flute"
     if Instrument=="Flute"
         x=Flute_audio(midi)
-    elseif Insturment=="Clarinet"
+    elseif Instrument=="Clarinet"
         C=Clarinet_audio(midi)
     end
     #calls the audio function depending on what instrument we are playing
