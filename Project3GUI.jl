@@ -33,7 +33,7 @@ signal_connect(instrument, "changed") do widget, others...
 end
 #End of insturment drop down decleration
 
-
+   
 #Note duration drop down decleration
 note = GtkComboBoxText() #create the drop down box
 choices = ["Note Duration", "Sixteenth", "Eigth", "Quarter","Half", "Whole"] #define options for the drop down
@@ -99,55 +99,55 @@ end
 #End dynamics drop down decleration
 
 
-#Virbrato slider decleration
-virbrato=GtkLabel("Virbrato") #create a label for the slider
-g[1,5]=virbrato #place the label in column one row five of the grid
+# #Virbrato slider decleration
+# virbrato=GtkLabel("Virbrato") #create a label for the slider
+# g[1,5]=virbrato #place the label in column one row five of the grid
   
-virbratoslide=GtkScale(false, 0:10) #create the slider
+# virbratoslide=GtkScale(false, 0:10) #create the slider
 
-#Function to get the value of the slider
-signal_connect(virbratoslide, "value-changed") do widget, others...
-    value = GAccessor.value(virbratoslide) #get the numeric value the slider is currently at
-    println("slider value is $value") #print the slider value to the terminal
-    #TO ADD: Function call for adding virbrato
-end
+# #Function to get the value of the slider
+# signal_connect(virbratoslide, "value-changed") do widget, others...
+#     value = GAccessor.value(virbratoslide) #get the numeric value the slider is currently at
+#     println("slider value is $value") #print the slider value to the terminal
+#     #TO ADD: Function call for adding virbrato
+# end
   
-g[1,5]=virbratoslide #place the slider in column one row five of the grid
-#End virbrato slider decleration
+# g[1,5]=virbratoslide #place the slider in column one row five of the grid
+# #End virbrato slider decleration
 
 
-#Reverb slider decleration
-#This slider follows the same format as the virbrato slider only with changed variable names 
-#See comments on virbrato slider for what each line does
-reverb=GtkLabel("Reverb")
-g[1,6]=reverb
+# #Reverb slider decleration
+# #This slider follows the same format as the virbrato slider only with changed variable names 
+# #See comments on virbrato slider for what each line does
+# reverb=GtkLabel("Reverb")
+# g[1,6]=reverb
 
-reverbslide=GtkScale(false, 0:10)
+# reverbslide=GtkScale(false, 0:10)
 
-signal_connect(reverbslide, "value-changed") do widget, others...
-    value = GAccessor.value(reverbslide)
-    println("slider value is $value")
-end
+# signal_connect(reverbslide, "value-changed") do widget, others...
+#     value = GAccessor.value(reverbslide)
+#     println("slider value is $value")
+# end
   
-g[1,6]=reverbslide
-#End reverb slider decleration
+# g[1,6]=reverbslide
+# #End reverb slider decleration
 
 
-#Tremolo slider decleration
-#This slider follows the same format as the virbrato slider only with changed variable names 
-#See comments on virbrato slider for what each line does
-tremolo=GtkLabel("Tremolo")
-g[1,7]=tremolo
+# #Tremolo slider decleration
+# #This slider follows the same format as the virbrato slider only with changed variable names 
+# #See comments on virbrato slider for what each line does
+# tremolo=GtkLabel("Tremolo")
+# g[1,7]=tremolo
 
-tremoloslide=GtkScale(false, 0:10)
+# tremoloslide=GtkScale(false, 0:10)
 
-signal_connect(tremoloslide, "value-changed") do widget, others...
-  value = GAccessor.value(tremoloslide)
-  println("slider value is $value")
-end
+# signal_connect(tremoloslide, "value-changed") do widget, others...
+#   value = GAccessor.value(tremoloslide)
+#   println("slider value is $value")
+# end
 
-g[1,7]=tremoloslide
-#End tremolo slider decleration
+# g[1,7]=tremoloslide
+# #End tremolo slider decleration
 
 
 #Delete button decleration

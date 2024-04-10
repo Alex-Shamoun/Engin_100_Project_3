@@ -5,31 +5,39 @@ using Plots
 using MAT
 using MIRT
 using DSP: Windows
+using FFTW
 
 # initialize two global variables used throughout
 S = 44100 # sampling rate (samples/second) for this low-fi project
 song = Float32[] # initialize "song" as an empty vector
 octave = 4
-BPM=120
+BPM=60
 BPS=BPM/60
 QuarterSamples=S/BPS
-Notetype= 1
+Notetype= 4
 
-
+function NoiseY(noise::Vector, lo::Int64, hi::Int64)
+    N = length(noise)
+    cutoff_hz = [lo, hi] # frequency range to retain (pass)
+    cutoff_index = round.(Int, cutoff_hz/S*N) # k = (f/S)*N
+    fx = fft(noise) # spectrum
+    fz = zeros(eltype(fx), size(fx))
+    pass = (1+cutoff_index[1]):min(1+cutoff_index[2], N)
+    fz[pass] .= fx[pass] # pass band
+    return 2*real(ifft(fz)) # convert back to time domain
+end
 
 function Flute_audio(midi::Int64)
 
     freq =(440 * 2^((midi-69)/12)) * 2^(float(octave) - 4) # compute frequency from midi number - FIXED!
-    N = Int(Notetype * S / BPS) # 0.5 sec
-    t = (0:N-1)/S # time samples: t = n/S
+   
     c = [1522.4, 611.3, 412.6, 195.7, 66.1 ] # amplitudes
     f= [1, 2, 3, 4, 5] *freq #creating the frequency values
     z = cos.(2π * t * f') # generating the rough wave
 
-    Noise=30*randn(size(t))
-
     
-    x = (z * c).+Noise # applying the noise to the wave, and the amplitudes
+    
+    x = (z * c).+FNoise # applying the noise to the wave, and the amplitudes
 
     duration=BPS*Notetype/4 #duration of note
     adsr_time = [0,0.1, 0.2, 0.5, 0.6, 0.7, 0.9, 0.95, 1] * duration # time values for the envelope
@@ -103,6 +111,17 @@ flute= {"Flute", Flute_volume, Flute_reverb, Flute_Vibrato, Flute}
 
 
 =#
+
+#Flute Noise
+N = Int(Notetype * S / BPS) # 0.5 sec
+t = (0:N-1)/S # time samples: t = n/S
+FNoise=30*randn(size(t))
+Lo=500
+Hi=10000
+FNoise=NoiseY(FNoise, Lo, Hi)
+
+
+
 
 
 
