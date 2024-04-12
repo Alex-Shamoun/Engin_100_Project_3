@@ -74,7 +74,7 @@ end
 #This drop down decleration follows the same format as the previous two only with changed variable names 
 #See comments on note and instrument decleration for what each line does
 Octave = GtkComboBoxText()
-choices = ["Octave", "Up", "Down"]
+choices = ["Octave", "Standard", "Up", "Down"]
 for choice in choices
   push!(Octave,choice)
 end
