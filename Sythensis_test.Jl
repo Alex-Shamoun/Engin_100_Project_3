@@ -62,31 +62,31 @@ env = interp1(adsr_time, adsr_vals, t) # !!
 #EeEve= interp1([4*10^4, N-1], [(1.05 .- exp.(-6*4*10^4)) .*exp.(-3*4*10^4), 0],  time)
 
 y = env .* x
-soundsc(y, S)
+#soundsc(y, S)
 
-plot(x)
+plot(y)
 xlims!(1, 200)
 
 
-#other Flute
+# #other Flute
 
-c2 = [1522.4, 611.3, 412.6, 195.7, 66.1 ]/60 # amplitudes
-f= [1, 2, 3, 4, 5] *440 #creating the frequency values
+# c2 = [1522.4, 611.3, 412.6, 195.7, 66.1 ]/60 # amplitudes
+# f= [1, 2, 3, 4, 5] *440 #creating the frequency values
 
-z = cos.(2π * t * f'*2^(0/12))
+# z = cos.(2π * t * f'*2^(0/12))
 
-x = (z * c2).+Noise # applying the noise to the wave, and the amplitudes
-y = env .* x
-soundsc(y, S)
-
-
+# x = (z * c2).+Noise # applying the noise to the wave, and the amplitudes
+# y = env .* x
+# soundsc(y, S)
 
 
 
 
-#plot(y)
 
-#CREATING MODEL OF CLARINET
+
+# #plot(y)
+
+# #CREATING MODEL OF CLARINET
 
 
 
@@ -119,7 +119,41 @@ x = z * c.+ CNoise
 
 Clar = env .* x 
 soundsc(Clar, S)
-plot(x)
-xlims!(0,500)
+plot(Clar)
+#xlims!(0,500)
 
 
+
+
+
+
+
+
+#Vibrato
+
+
+S = 44100
+N = Int(2 * S)
+t = (0:N-1)/S
+c = [0.21, 0.14, 0.07, 0.045, 0.02]*100 # amplitudes
+f= [1, 2, 3, 4, 5] *440*2^(0/12)
+x = zeros(N); y = zeros(N);
+lfo = 0.005 * cos.(2π*4*t) / 4 # about 0.1% pitch variation
+
+x = +([c[k] * sin.(2π * f[k] * t) for k in 1:length(c)]...)
+y = +([c[k] * sin.(2π * f[k] * t + f[k] * lfo) for k in 1:length(c)]...)
+
+x = y.+Noise # applying the noise to the wave, and the amplitudes
+z = env .* x
+#soundsc(z, S)
+
+
+
+Tremlfo = 0.7 .- 0.2 * cos.(2π*6*t) # what frequency?
+y = Tremlfo .* z
+soundsc(y, S)
+plot(y)
+
+
+
+#clarinet Tremo + Vibrato
