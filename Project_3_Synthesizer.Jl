@@ -10,11 +10,14 @@ using FFTW
 # initialize two global variables used throughout
 S = 44100 # sampling rate (samples/second) for this low-fi project
 song = Float32[] # initialize "song" as an empty vector
+Fsong = Float32[]
+CSong = Float32[]
+
 octave = 4
-BPM=60
+BPM=120
 BPS=BPM/60
 QuarterSamples=S/BPS
-Notetype= 4
+Notetype= 2
 
 function NoiseY(noise::Vector, lo::Int64, hi::Int64)
     N = length(noise)
@@ -31,7 +34,7 @@ function Flute_audio(midi::Int64)
 
     freq =(440 * 2^((midi-69)/12)) * 2^(float(octave) - 4) # compute frequency from midi number - FIXED!
    
-    c = [1522.4, 611.3, 412.6, 195.7, 66.1 ] # amplitudes
+    c = [0.21, 0.14, 0.07, 0.045, 0.02]*5 # amplitudes# amplitudes
     f= [1, 2, 3, 4, 5] *freq #creating the frequency values
     z = cos.(2π * t * f') # generating the rough wave
 
@@ -76,6 +79,53 @@ function miditone(midi::Int64)
     return nothing
 end
 
+
+
+function Audio(midi::Int64, F::Vector, c::Vector, Envindex::Int64, Noise::Vector, Vibamt::Float64, vibSpd::Float64, Tamt::Float64, Trate::Float64, ins::Int64)
+    freq =(440 * 2^((midi-69)/12)) * 2^(float(octave) - 4) # compute frequency from midi number - FIXED!
+  
+    F*freq #applies frequency to harmonics
+    N = Int(Notetype * S / BPS) # 0.5 sec
+    t = (0:N-1)/S # time samples: t = n/S
+
+    #Vibrato
+    lfo = 0.005 * cos.(2π*Vib*t) / 4 #the ammount we vibrato by
+
+    z = cos.(2π * t * f'.+f'*lfo) #generates the wave and applies vibrato
+    x = z * c .+ Noise #applies noise which we pass in
+
+
+    #This is to generate the envelope and it will call values that are hard set within the code
+    if Envindex ==1
+        Envtime=NormalEnvelopeTime*Duration
+        EnvVal=NormalEnvelopeValue
+    elseif Envindex==2
+        Envtime=StaccatoEnvelopeTime*Duration
+        EnvVal=StaccatoEnvelopeValue
+    else 
+        println("You have inputted an invalid articulation")
+        env=zeros(size(t), 1)
+    end
+    env=interp1(Envtime,EnvVal,t) #this uses the envelope values chosen above to generate the envelope
+
+    Z = env .* x #applies the envelope
+
+    #Generating Tremolo
+    Tremlfo = (1-Tamt).- Tamt * cos.(2π*Trate*t) # what frequency?
+    Music = Tremlfo .* Z
+
+    soundsc(Music, S)# play note so that user can hear it immediately
+    if Ins == 1
+        global FSong= [Fsong ; Music]
+    elseif Ins ==2
+        global CSong= [Csong ; Music]
+    else
+        println("Invalid Instrument selected")
+    end
+end
+
+
+
 #=
 select instrument = (instrument::vector)
 function
@@ -115,7 +165,7 @@ flute= {"Flute", Flute_volume, Flute_reverb, Flute_Vibrato, Flute}
 #Flute Noise
 N = Int(Notetype * S / BPS) # 0.5 sec
 t = (0:N-1)/S # time samples: t = n/S
-FNoise=30*randn(size(t))
+FNoise=2.5*randn(size(t))
 Lo=500
 Hi=10000
 FNoise=NoiseY(FNoise, Lo, Hi)
