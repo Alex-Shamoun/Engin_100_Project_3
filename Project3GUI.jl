@@ -1,5 +1,6 @@
 using Gtk
 using GTK3_jll
+using Plots
 
 #Grid decleration
 g = GtkGrid() # initialize a grid to hold buttons
@@ -27,13 +28,13 @@ g[1,1]=instrument #place the drop down box in the first row and first column of 
 # Function for the change in drop downs
 signal_connect(instrument, "changed") do widget, others...
   idx = get_gtk_property(instrument, "active", Int) # get the active index
-  str = Gtk.bytestring( GAccessor.active_text(instrument) ) #get the string (insturment choice in array choices) corresponding to the index
+  str = Gtk.bytestring( GAccessor.active_text(instrument) ) #get the string (insturment choice in array choices) corresponding to the index 
   println("Active element is \"$str\" at index $idx") #print in terminal which element and which string is active
   #TO ADD: function call to the modeling function for selected insturment
 end
 #End of insturment drop down decleration
 
-   
+
 #Note duration drop down decleration
 note = GtkComboBoxText() #create the drop down box
 choices = ["Note Duration", "Sixteenth", "Eigth", "Quarter","Half", "Whole"] #define options for the drop down
@@ -58,7 +59,7 @@ end
 #This drop down decleration follows the same format as the previous two only with changed variable names 
 #See comments on note and instrument decleration for what each line does
 Articulations = GtkComboBoxText() 
-choices = ["Articulations", "Accent", "Staccato", "Trill", "Fermata","Slur"]
+choices = ["Articulations", "Staccato", "No Articulation"]
 for choice in choices
   push!(Articulations,choice)
 end
@@ -66,10 +67,7 @@ set_gtk_property!(Articulations,:active,0)
 g[1,3]=Articulations
 
 signal_connect(Articulations, "changed") do widget, others...
-  # get the active index
   idx = get_gtk_property(Articulations, "active", Int)
-  # get the active string 
-  # We need to wrap the GAccessor call into a Gtk bytestring
   str = Gtk.bytestring( GAccessor.active_text(Articulations) ) 
   println("Active element is \"$str\" at index $idx")
 end
@@ -84,70 +82,67 @@ choices = ["Dynamics", "Forte", "Mezzo Piano", "Mezzo Forte","Crescendo", "Decre
 for choice in choices
   push!(Dynamics,choice)
 end
-# Lets set the active element to be "please pick an insturment"
+
 set_gtk_property!(Dynamics,:active,0)
 g[1,4]=Dynamics
 
 signal_connect(Dynamics, "changed") do widget, others...
-    # get the active index
     idx = get_gtk_property(Dynamics, "active", Int)
-    # get the active string 
-    # We need to wrap the GAccessor call into a Gtk bytestring
     str = Gtk.bytestring( GAccessor.active_text(Dynamics) ) 
     println("Active element is \"$str\" at index $idx")
 end
 #End dynamics drop down decleration
 
 
-# #Virbrato slider decleration
-# virbrato=GtkLabel("Virbrato") #create a label for the slider
-# g[1,5]=virbrato #place the label in column one row five of the grid
+#Virbrato slider decleration
+virbrato=GtkLabel("Virbrato") #create a label for the slider
+g[1,5]=virbrato #place the label in column one row five of the grid
   
-# virbratoslide=GtkScale(false, 0:10) #create the slider
+virbratoslide=GtkScale(false, 0:10) #create the slider
 
-# #Function to get the value of the slider
-# signal_connect(virbratoslide, "value-changed") do widget, others...
-#     value = GAccessor.value(virbratoslide) #get the numeric value the slider is currently at
-#     println("slider value is $value") #print the slider value to the terminal
-#     #TO ADD: Function call for adding virbrato
-# end
+#Function to get the value of the slider
+signal_connect(virbratoslide, "value-changed") do widget, others...
+    value = GAccessor.value(virbratoslide) #get the numeric value the slider is currently at
+    println("slider value is $value") #print the slider value to the terminal
+    #TO ADD: Function call for adding virbrato
+end
   
-# g[1,5]=virbratoslide #place the slider in column one row five of the grid
-# #End virbrato slider decleration
+g[1,5]=virbratoslide #place the slider in column one row five of the grid
+#End virbrato slider decleration
 
 
-# #Reverb slider decleration
-# #This slider follows the same format as the virbrato slider only with changed variable names 
-# #See comments on virbrato slider for what each line does
-# reverb=GtkLabel("Reverb")
-# g[1,6]=reverb
+#Reverb slider decleration
+#This slider follows the same format as the virbrato slider only with changed variable names 
+#See comments on virbrato slider for what each line does
+reverb=GtkLabel("Reverb")
+g[1,6]=reverb
 
-# reverbslide=GtkScale(false, 0:10)
+reverbslide=GtkScale(false, 0:10)
 
-# signal_connect(reverbslide, "value-changed") do widget, others...
-#     value = GAccessor.value(reverbslide)
-#     println("slider value is $value")
-# end
+signal_connect(reverbslide, "value-changed") do widget, others...
+    value = GAccessor.value(reverbslide)
+    println("slider value is $value")
+end
   
-# g[1,6]=reverbslide
-# #End reverb slider decleration
+g[1,6]=reverbslide
+#End reverb slider decleration
 
 
-# #Tremolo slider decleration
-# #This slider follows the same format as the virbrato slider only with changed variable names 
-# #See comments on virbrato slider for what each line does
-# tremolo=GtkLabel("Tremolo")
-# g[1,7]=tremolo
+#Tremolo slider decleration
+#This slider follows the same format as the virbrato slider only with changed variable names 
+#See comments on virbrato slider for what each line does
+tremolo=GtkLabel("Tremolo")
+g[1,7]=tremolo
 
-# tremoloslide=GtkScale(false, 0:10)
+tremoloslide=GtkScale(false, 0:10)
 
-# signal_connect(tremoloslide, "value-changed") do widget, others...
-#   value = GAccessor.value(tremoloslide)
-#   println("slider value is $value")
-# end
+signal_connect(tremoloslide, "value-changed") do widget, others...
+  value = GAccessor.value(tremoloslide)
+  println("slider value is $value")
+end
 
-# g[1,7]=tremoloslide
-# #End tremolo slider decleration
+g[1,7]=tremoloslide
+#End tremolo slider decleration
 
 
 #Delete button decleration
@@ -176,7 +171,7 @@ push!(GAccessor.style_context(play),GtkStyleProvider(playbutton),600)
 sharpbutton= GtkCssProvider(data="#wb {color:white; background:black;}") #set style for sharp keys
 
 white=["C" 2; "D" 4; "E" 6; "F" 8; "G" 10; "A" 12; "B" 14] #array contaning each note's name and its column position
-black = ["C" 2; "D" 4; "F" 8; "G" 10; "A" 12] #array containing each sharp's name and its column start position
+black = ["C" 2; "D" 4; "F" 8; "G" 10; "A" 12] #array containing each sharp's name and its column position
 
 
 for i in 1:size(white, 1) # add the white keys to the grid
@@ -196,6 +191,6 @@ for i in 1:size(black,1) # add the black keys to the grid
 #End keyboard decleration 
 
 
-win = GtkWindow("Orchestral Synthesizer",400,300) #define the pop up window by setting the title and size (pixel by pixel)
+win = GtkWindow("Orchestral Synthesizer",400,300) #define the pop up window by setting the title and size  (pixel by pixel)
 push!(win, g) #push the grid into the window
 showall(win) #show the window
