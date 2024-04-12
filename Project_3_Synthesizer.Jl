@@ -13,6 +13,25 @@ song = Float32[] # initialize "song" as an empty vector
 Fsong = Float32[]
 CSong = Float32[]
 
+#declaring the Envelope relations
+NomETime = [0,0.1, 0.2, 0.5, 0.6, 0.7, 0.9, 1] #normal Envelope
+NomEValue = [0,0.6,  0.9, 0.8,0.7, 0.4, 0.2, 0]
+
+
+StacETime = [0,0.02, 0.05, 0.13, 0.2, 0.23, 0.27] #Staccato Envelope
+StacEValue = [0,0.6, 1, 0.6,0.4, 0.1, 0]
+
+
+#Declaring Flute values
+
+Flutec = [0.21, 0.14, 0.07, 0.045, 0.02]*100 # amplitudes
+Flutef= [1, 2, 3, 4, 5]
+
+#clarinet values
+Clarc = [0.9,0.05, 0.4, 0.04, 0.07, 0.03, 0.04]*100 # amplitudes
+Clarf= [1, 2, 3, 4, 5, 6, 7]
+
+
 octave = 4
 BPM=120
 BPS=BPM/60
@@ -67,13 +86,13 @@ function Clarinet_audio(midi::Int64)
     global song = [song; Clar]
 end
 
-function miditone(midi::Int64) 
+function miditone(midi::Int64, Instrument::String, Envindex::Int64, Vibamt::Float64, vibSpd::Float64, Tamt::Float64, Trate::Float64) 
     local nsample::Int = floor(QuarterSamples)
     Instrument="Flute"
     if Instrument=="Flute"
-        x=Flute_audio(midi)
+        x=Audio(midi, Flutef, Flutec, Envindex, FNoise, Vibamt, vibSpd, Tamt, Trate )
     elseif Instrument=="Clarinet"
-        C=Clarinet_audio(midi)
+        C=Audio(midi, Clarf, ClarC, Envindex, CNoise, Vibamt, vibSpd, Tamt, Trate )
     end
     #calls the audio function depending on what instrument we are playing
     return nothing
@@ -81,27 +100,30 @@ end
 
 
 
-function Audio(midi::Int64, F::Vector, c::Vector, Envindex::Int64, Noise::Vector, Vibamt::Float64, vibSpd::Float64, Tamt::Float64, Trate::Float64, ins::Int64)
+function Audio(midi::Int64, F::Vector, c::Vector, Envindex::Int64, Noise::Vector, Vibamt::Float64, Vibspd::Float64, Tamt::Float64, Trate::Float64)
+    N = Int(Notetype * S / BPS) # 0.5 sec
+    t = (0:N-1)/S # time samples: t = n/S
+   
     freq =(440 * 2^((midi-69)/12)) * 2^(float(octave) - 4) # compute frequency from midi number - FIXED!
   
-    F*freq #applies frequency to harmonics
+    f=F*freq #applies frequency to harmonics
     N = Int(Notetype * S / BPS) # 0.5 sec
     t = (0:N-1)/S # time samples: t = n/S
 
     #Vibrato
-    lfo = 0.005 * cos.(2π*Vib*t) / 4 #the ammount we vibrato by
+    lfo = Vibspd*0.001 * cos.(2π*Vibamt*t) / 4 #the ammount we vibrato by
 
-    z = cos.(2π * t * f'.+f'*lfo) #generates the wave and applies vibrato
-    x = z * c .+ Noise #applies noise which we pass in
+    z = +([c[k] * sin.(2π * f[k] * t + f[k] * lfo) for k in 1:length(c)]...) #generates the wave and applies vibrato
+    x = z.+ Noise #applies noise which we pass in
 
-
+    Duration=BPS*Notetype/4 #duration of note
     #This is to generate the envelope and it will call values that are hard set within the code
     if Envindex ==1
-        Envtime=NormalEnvelopeTime*Duration
-        EnvVal=NormalEnvelopeValue
+        Envtime=NomETime*Duration
+        EnvVal=NomEValue
     elseif Envindex==2
-        Envtime=StaccatoEnvelopeTime*Duration
-        EnvVal=StaccatoEnvelopeValue
+        Envtime=StacETime*Duration
+        EnvVal=StacEValue
     else 
         println("You have inputted an invalid articulation")
         env=zeros(size(t), 1)
@@ -111,18 +133,22 @@ function Audio(midi::Int64, F::Vector, c::Vector, Envindex::Int64, Noise::Vector
     Z = env .* x #applies the envelope
 
     #Generating Tremolo
-    Tremlfo = (1-Tamt).- Tamt * cos.(2π*Trate*t) # what frequency?
+    Tremlfo = (1-Tamt*0.1).- Tamt*0.1 * cos.(2π*Trate*t) # what frequency?
     Music = Tremlfo .* Z
 
     soundsc(Music, S)# play note so that user can hear it immediately
-    if Ins == 1
-        global FSong= [Fsong ; Music]
-    elseif Ins ==2
-        global CSong= [Csong ; Music]
+    if c==Flutec #Appends to the indiviual song vectors
+        global FSong= [Fsong ; Music] #Flute
+    elseif c==Clarc
+        global CSong= [Csong ; Music] #Clarinet
     else
         println("Invalid Instrument selected")
     end
+    return nothing
 end
+
+
+
 
 
 
@@ -168,8 +194,12 @@ t = (0:N-1)/S # time samples: t = n/S
 FNoise=2.5*randn(size(t))
 Lo=500
 Hi=10000
-FNoise=NoiseY(FNoise, Lo, Hi)
+FNoise=NoiseY(FNoise, Lo, Hi) #Flute Noise
 
+CNoise= 2.5*randn(size(t))
+Lo=50
+Hi=600
+CNoise=NoiseY(CNoise, Lo, Hi)#Clarinet Noise
 
 
 
@@ -199,7 +229,7 @@ upbutton = GtkCssProvider(data="#ub {color:black; background:white;}")
 for i in 1:size(white,1) # add the white keys to the grid
     key, midi = white[i,1:2]
     b = GtkButton(key) # make a button for this key
-    signal_connect((w) -> miditone(midi), b, "clicked") # callback
+    signal_connect((w) -> miditone(midi, "Flute", 1, 2.0, 3.0, 4.0, 2.0), b, "clicked") # callback
     g[(1:2) .+ 2*(i-1), 2] = b # put the button in row 2 of the grid
 end
 for i in 1:size(black,1) # add the black keys to the grid
@@ -207,15 +237,15 @@ for i in 1:size(black,1) # add the black keys to the grid
     b = GtkButton(key * "♯") # to make ♯ symbol, type \sharp then hit <tab>
     push!(GAccessor.style_context(b), GtkStyleProvider(sharp), 600)
     set_gtk_property!(b, :name, "wb") # set "style" of black key
-    signal_connect((w) -> miditone(midi), b, "clicked") # callback
+    signal_connect((w) -> miditone(midi, "Flute", 1, 2.0, 3.0, 4.0, 2.0), b, "clicked") # callback
     g[start .+ (0:1), 1] = b # put the button in row 1 of the grid
 end
 
 
 function end_button_clicked(w) # callback function for "end" button
     println("The end button")
-    soundsc(song, S) # play the entire song when user clicks "end"
-    matwrite("/Users/comradereznov/Documents/VS_Code/Engin_100/Project_1/proj1_2.mat", Dict("song" => song); compress=true) # save song to file
+    soundsc(Fsong, S) # play the entire song when user clicks "end"
+    wavwrite("C:\Users\blood\OneDrive\Documents\GitHub\Engin_100_Project_3\Proj3audio.Wav", Dict("song" => song); compress=true) # save song to file
 end
 
 ebutton = GtkButton("end") # make an "end" button
