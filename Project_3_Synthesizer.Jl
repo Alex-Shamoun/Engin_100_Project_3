@@ -49,6 +49,11 @@ function NoiseY(noise::Vector, lo::Int64, hi::Int64)
     return 2*real(ifft(fz)) # convert back to time domain
 end
 
+
+
+#Commenting out the old functions
+#=
+
 function Flute_audio(midi::Int64)
 
     freq =(440 * 2^((midi-69)/12)) * 2^(float(octave) - 4) # compute frequency from midi number - FIXED!
@@ -85,14 +90,16 @@ function Clarinet_audio(midi::Int64)
     soundsc(Clar, S)# play note so that user can hear it immediately
     global song = [song; Clar]
 end
+=#
 
-function miditone(midi::Int64, Instrument::String, Envindex::Int64, Vibamt::Float64, vibSpd::Float64, Tamt::Float64, Trate::Float64) 
-    local nsample::Int = floor(QuarterSamples)
-    Instrument="Flute"
-    if Instrument=="Flute"
-        x=Audio(midi, Flutef, Flutec, Envindex, FNoise, Vibamt, vibSpd, Tamt, Trate )
-    elseif Instrument=="Clarinet"
-        C=Audio(midi, Clarf, ClarC, Envindex, CNoise, Vibamt, vibSpd, Tamt, Trate )
+
+
+
+function miditone(midi::Int64, Instrument::Int64, Envindex::Int64, Vibamt::Float64, vibSpd::Float64, Tamt::Float64, Trate::Float64, Notetype::Int64, Octave::Int64) 
+    if Instrument==1
+        x=Audio(midi, Flutef, Flutec, Envindex, Vibamt, vibSpd, Tamt, Trate, Notetype, Octave )
+    elseif Instrument==2
+        C=Audio(midi, Clarf, Clarc, Envindex, Vibamt, vibSpd, Tamt, Trate, Notetype, Octave )
     end
     #calls the audio function depending on what instrument we are playing
     return nothing
@@ -100,28 +107,54 @@ end
 
 
 
-function Audio(midi::Int64, F::Vector, c::Vector, Envindex::Int64, Noise::Vector, Vibamt::Float64, Vibspd::Float64, Tamt::Float64, Trate::Float64)
-    N = Int(Notetype * S / BPS) # 0.5 sec
+function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int64, Vibamt::Float64, Vibspd::Float64, Tamt::Float64, Trate::Float64, Notetype::Int64, octave::Int64)
+    #converts note type into the relative notetype for usage
+    if Notetype==1
+        Notetype=1/4 #sixteenth
+    elseif Notetype==2
+        Notetype=1/2 #eight
+    elseif Notetype==3
+        Notetype=1 #Quarter
+    elseif Notetype==4
+        Notetype=2 #half
+    elseif Notetype==5
+        Notetype=4 #Full
+    else
+        println("Invalid not duration selcted")
+    end
+    
+    N = Int(floor(Notetype * S / BPS)) # 0.5 sec
     t = (0:N-1)/S # time samples: t = n/S
-   
-    freq =(440 * 2^((midi-69)/12)) * 2^(float(octave) - 4) # compute frequency from midi number - FIXED!
+    
+    Noise= 2.5*randn(size(t)) 
+    freq =(440 * 2^((midi-69)/12)) * 2^(float(octave)-1) # compute frequency from midi number - FIXED!
   
     f=F*freq #applies frequency to harmonics
-    N = Int(Notetype * S / BPS) # 0.5 sec
-    t = (0:N-1)/S # time samples: t = n/S
 
     #Vibrato
-    lfo = Vibspd*0.001 * cos.(2π*Vibamt*t) / 4 #the ammount we vibrato by
+    lfo = Vibspd*0.0001 * cos.(2π*Vibamt*t) / 4 #the ammount we vibrato by
 
     z = +([c[k] * sin.(2π * f[k] * t + f[k] * lfo) for k in 1:length(c)]...) #generates the wave and applies vibrato
+    
+    #Generating Noise
+    if c==Flutec #Appends to the indiviual song vectors
+        Noise=NoiseY(Noise, FLo, FHi) #Flute Noise
+    elseif c==Clarc
+        Noise=NoiseY(Noise, CLo, CHi) #Clarinet Noise
+    else
+        println("Invalid Instrument selected")
+    end
+
+    
+    
     x = z.+ Noise #applies noise which we pass in
 
     Duration=BPS*Notetype/4 #duration of note
     #This is to generate the envelope and it will call values that are hard set within the code
-    if Envindex ==1
+    if Envindex ==2
         Envtime=NomETime*Duration
         EnvVal=NomEValue
-    elseif Envindex==2
+    elseif Envindex==1
         Envtime=StacETime*Duration
         EnvVal=StacEValue
     else 
@@ -137,6 +170,9 @@ function Audio(midi::Int64, F::Vector, c::Vector, Envindex::Int64, Noise::Vector
     Music = Tremlfo .* Z
 
     soundsc(Music, S)# play note so that user can hear it immediately
+
+
+    
     if c==Flutec #Appends to the indiviual song vectors
         global Fsong= [Fsong ; Music] #Flute
     elseif c==Clarc
@@ -189,18 +225,11 @@ flute= {"Flute", Flute_volume, Flute_reverb, Flute_Vibrato, Flute}
 =#
 
 #Flute Noise
-N = Int(Notetype * S / BPS) # 0.5 sec
-t = (0:N-1)/S # time samples: t = n/S
-FNoise=2.5*randn(size(t))
-Lo=500
-Hi=10000
-FNoise=NoiseY(FNoise, Lo, Hi) #Flute Noise
+FLo=500
+FHi=10000
 
-CNoise= 2.5*randn(size(t))
-Lo=50
-Hi=600
-CNoise=NoiseY(CNoise, Lo, Hi)#Clarinet Noise
-
+CLo=50
+CHi=600
 
 
 
@@ -229,7 +258,7 @@ upbutton = GtkCssProvider(data="#ub {color:black; background:white;}")
 for i in 1:size(white,1) # add the white keys to the grid
     key, midi = white[i,1:2]
     b = GtkButton(key) # make a button for this key
-    signal_connect((w) -> miditone(midi, "Flute", 1, 2.0, 3.0, 4.0, 2.0), b, "clicked") # callback
+    signal_connect((w) -> miditone(midi, 1, 2, 2.0, 2.0, 2.0, 2.0, 3, 1), b, "clicked")#Should be able to pass things into the other function
     g[(1:2) .+ 2*(i-1), 2] = b # put the button in row 2 of the grid
 end
 
