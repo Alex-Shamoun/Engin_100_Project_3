@@ -8,7 +8,7 @@ using DSP: Windows
 using FFTW
 
 # initialize two global variables used throughout
-S = 44100 # sampling rate (samples/second) for this low-fi project
+S = 44400 # sampling rate (samples/second) for this low-fi project
 song = Float32[] # initialize "song" as an empty vector
 Fsong = Float32[]
 Csong = Float32[]
@@ -294,7 +294,7 @@ function end_button_clicked(w) # callback function for "end" button
     song= Fsong.+Csong
     soundsc(song, S) # play the entire song when user clicks "end"
     Song=song./100
-    wavwrite(Song,"Proj3audio.WAV"; Fs=44000) # save song to file
+    wavwrite(Song,"Proj3audio.WAV"; Fs=44400) # save song to file
 end
 
 ebutton = GtkButton("end") # make an "end" button
@@ -339,9 +339,9 @@ push!(GAccessor.style_context(ubutton), GtkStyleProvider(upbutton), 600)
 set_gtk_property!(ubutton, :name, "ub")
 signal_connect(up_button_clicked, ubutton, "clicked")
 
-win = GtkWindow("gtk3", 400, 300) # 400×300 pixel window for all the buttons
-push!(win, g) # put button grid into the window
-showall(win); # display the window full of buttons
+#win = GtkWindow("gtk3", 400, 300) # 400×300 pixel window for all the buttons
+#push!(win, g) # put button grid into the window
+#showall(win); # display the window full of buttons
 
 
 

@@ -168,6 +168,36 @@ push!(GAccessor.style_context(delete),GtkStyleProvider(deletebutton),600) #apply
 #End delete button decleration
 
 
+
+
+function Play_button_clicked(w) # callback function for "end" button
+  println("The play button")
+  global Fsong
+
+  global Csong
+
+  global FinFsong= Fsong #ddeclaring final song vectors
+  global FinCsong= Csong
+
+  Fsize=length(Fsong) #getting length of Song vectors
+  Csize=length(Csong)
+  I=Fsize
+  if I<Csize #making song vectors equal length
+      I=Csize
+      addzero=Csize-Fsize
+      addedzeros=zeros(addzero, 1)
+      FinFsong=[FinFsong; addedzeros]
+  elseif I> Csize
+      addzero=Fsize-Csize
+      addedzeros=zeros(addzero, 1)
+      FinCsong=[FinCsong; addedzeros]
+  elseif I==Csize
+  end
+  song= FinFsong.+FinCsong #adding song vectors together
+  soundsc(song, S) # play the entire song when user clicks "end"
+  Song=song./100 #adjusts volume for output
+  wavwrite(Song,"Proj3audio.WAV"; Fs=44400) # save song to file
+end
 #Play button decleration
 #This button follows the same format as the delete button only with changed variable names 
 #See comments on delete button for what each line does
@@ -175,7 +205,7 @@ play=GtkButton("Play")
 playbutton=GtkCssProvider(data="#eb {color:white; background:green;}")
 g[1,10]=play
 set_gtk_property!(play, :name, "eb")
-#signal_connect(function,play,"clicked")#add in function
+signal_connect(Play_button_clicked, play, "clicked")
 #add in function to recgonize when the delete button is pressed
 push!(GAccessor.style_context(play),GtkStyleProvider(playbutton),600)
 #End play button decleration
@@ -191,7 +221,7 @@ black = ["F" 2 66; "G" 4 68; "A" 8 70; "C" 10 73; "D" 12 75] #array containing e
 for i in 1:size(white, 1) # add the white keys to the grid
   Name, col, midi = white[i, 1:3] 
   b = GtkButton(Name) # make a button for current key
-  signal_connect((w) -> miditone(midi, insidx, artidx, Virbratov_value, Virbratospeed_value, Tremolor_value, 2.0, duridx, octidx), b, "clicked")#Should be able to pass things into the other function
+  signal_connect((w) -> miditone(midi, insidx, artidx, Virbratov_value, Virbratospeed_value, Tremolor_value, Tremolo_value, duridx, octidx), b, "clicked")#Should be able to pass things into the other function
   g[1 .+ (1:2) .+ 2*(i-1), (6:10)] = b # put the button in rows 6 through 9 of the grid
 end
 
@@ -200,7 +230,7 @@ for i in 1:size(black,1) # add the black keys to the grid
   b = GtkButton(key * "♯") #make a button for current key
   push!(GAccessor.style_context(b), GtkStyleProvider(sharpbutton), 600) #apply the style to the key 
   set_gtk_property!(b, :name, "wb") # set "style" of black key
-  #signal_connect((w) -> miditone(midi), b, "clicked") #Fix this line to pass in proper things 
+  signal_connect((w) -> miditone(midi, insidx, artidx, Virbratov_value, Virbratospeed_value, Tremolor_value, 2.0, duridx, octidx), b, "clicked")#Should be able to pass things into the other function
   g[start .+ (0:1) .+ 1, (1:5)] = b # put the button in rows 1 through 5 of the grid
   end
 
