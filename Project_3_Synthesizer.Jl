@@ -11,7 +11,7 @@ using FFTW
 S = 44100 # sampling rate (samples/second) for this low-fi project
 song = Float32[] # initialize "song" as an empty vector
 Fsong = Float32[]
-CSong = Float32[]
+Csong = Float32[]
 
 #declaring the Envelope relations
 NomETime = [0,0.1, 0.2, 0.5, 0.6, 0.7, 0.9, 1] #normal Envelope
@@ -138,9 +138,9 @@ function Audio(midi::Int64, F::Vector, c::Vector, Envindex::Int64, Noise::Vector
 
     soundsc(Music, S)# play note so that user can hear it immediately
     if c==Flutec #Appends to the indiviual song vectors
-        global FSong= [Fsong ; Music] #Flute
+        global Fsong= [Fsong ; Music] #Flute
     elseif c==Clarc
-        global CSong= [Csong ; Music] #Clarinet
+        global Csong= [Csong ; Music] #Clarinet
     else
         println("Invalid Instrument selected")
     end
@@ -232,6 +232,7 @@ for i in 1:size(white,1) # add the white keys to the grid
     signal_connect((w) -> miditone(midi, "Flute", 1, 2.0, 3.0, 4.0, 2.0), b, "clicked") # callback
     g[(1:2) .+ 2*(i-1), 2] = b # put the button in row 2 of the grid
 end
+
 for i in 1:size(black,1) # add the black keys to the grid
     key, midi, start = black[i,1:3]
     b = GtkButton(key * "♯") # to make ♯ symbol, type \sharp then hit <tab>
@@ -244,8 +245,27 @@ end
 
 function end_button_clicked(w) # callback function for "end" button
     println("The end button")
-    soundsc(Fsong, S) # play the entire song when user clicks "end"
-    wavwrite("C:\Users\blood\OneDrive\Documents\GitHub\Engin_100_Project_3\Proj3audio.Wav", Dict("song" => song); compress=true) # save song to file
+    global Fsong
+
+    global Csong
+
+    Fsize=length(Fsong)
+    Csize=length(Csong)
+    I=Fsize
+    if I<Csize
+        I=Csize
+        addzero=Csize-Fsize
+        addedzeros=zeros(addzero, 1)
+        global Fsong=[Fsong; addedzeros]
+    elseif I> Csize
+        addzero=Fsize-Csize
+        addedzeros=zeros(addzero, 1)
+        global Csong=[Csong; addedzeros]
+    end
+    song= Fsong.+Csong
+    soundsc(song, S) # play the entire song when user clicks "end"
+    Song=song./100
+    wavwrite(Song,"Proj3audio.WAV"; Fs=44000) # save song to file
 end
 
 ebutton = GtkButton("end") # make an "end" button
