@@ -183,7 +183,21 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
     return nothing
 end
 
-
+#delete function
+function delete_clicked(Insturment::Int64){
+    if Insturment==1 #if the current instrument selection is a flute
+        {
+            pop!(Fsong)
+        }
+    else if Insturment==2 #if the current insturment selection is a clarinet 
+        {
+            pop!(Csong)
+        } 
+    else 
+        {
+            print("Please select an Insturment to delete a note")
+        }
+}
 
 
 
