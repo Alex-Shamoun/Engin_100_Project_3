@@ -169,7 +169,7 @@ delete=GtkButton("Delete") #define the button
 deletebutton=GtkCssProvider(data="#eb {color:white; background:red;}") #set the style for the button
 g[1,9]=delete #place the button in column one row eight in the grid
 set_gtk_property!(delete, :name, "eb") #apply the style to the button
-#signal_connect(function, delete,"clicked")#add in fucntion and such
+signal_connect((w) -> delete_clicked(Inst_idx), delete, "clicked")
 push!(GAccessor.style_context(delete),GtkStyleProvider(deletebutton),600) #apply the style to the button in the grid
 #End delete button decleration
 
