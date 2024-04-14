@@ -191,45 +191,6 @@ end
 
 
 
-
-
-
-#=
-select instrument = (instrument::vector)
-function
-    instrument = [Flute, Clarinet, Bassoon, Tuba, Violin, Cello]
-end 
-=#
-#=
-function Vibrato (instrument::vector)
-blablabla
-
-
-
-=#
-
-#=
-function reverb (instrument::vector)
-blablalba
-
-
-=#
-
-#=
-function Volume (instrument::vector)
-blablalba
-
-
-=#
-
-#=
-
-flute= {"Flute", Flute_volume, Flute_reverb, Flute_Vibrato, Flute}
-
-
-
-=#
-
 #Flute Noise
 FLo=500
 FHi=10000
