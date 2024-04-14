@@ -10,6 +10,11 @@ set_gtk_property!(g, :row_spacing, 5) # Spacing between rows
 set_gtk_property!(g, :row_homogeneous, true) # stretch rows with window resize
 set_gtk_property!(g, :column_spacing, 5) #Spacing between columns
 set_gtk_property!(g, :column_homogeneous, false) #stretch columns with window resize 
+Virbratov_value = 0.0
+Virbratospeed_value =0.0
+Tremolor_value= 0.0
+Tremolo_value=0.0
+
 
 
 #Instrument drop down decleration
@@ -75,7 +80,7 @@ end
 #This drop down decleration follows the same format as the previous two only with changed variable names 
 #See comments on note and instrument decleration for what each line does
 Octave = GtkComboBoxText()
-choices = ["Octave", "Standard","Up", "Down"]
+choices = ["Octave", "Down", "Standard","Up"]
 for choice in choices
   push!(Octave,choice)
 end
@@ -163,7 +168,7 @@ delete=GtkButton("Delete") #define the button
 deletebutton=GtkCssProvider(data="#eb {color:white; background:red;}") #set the style for the button
 g[1,9]=delete #place the button in column one row eight in the grid
 set_gtk_property!(delete, :name, "eb") #apply the style to the button
-#signal_connect(function, delete,"clicked")#add in fucntion and such
+signal_connect((w) -> delete_clicked(insidx), delete, "clicked")
 push!(GAccessor.style_context(delete),GtkStyleProvider(deletebutton),600) #apply the style to the button in the grid
 #End delete button decleration
 

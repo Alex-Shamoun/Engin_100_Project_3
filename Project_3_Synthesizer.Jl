@@ -12,6 +12,8 @@ S = 44400 # sampling rate (samples/second) for this low-fi project
 song = Float32[] # initialize "song" as an empty vector
 Fsong = Float32[]
 Csong = Float32[]
+FNotetype= Float32[]
+CNotetype= Float32[]
 
 #declaring the Envelope relations
 NomETime = [0,0.1, 0.2, 0.5, 0.6, 0.7, 0.9, 1] #normal Envelope
@@ -119,6 +121,8 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
         Notetype=2 #half
     elseif Notetype==5
         Notetype=4 #Full
+    elseif Notetype==6
+        Notetype=0 #Rest
     else
         println("Invalid not duration selcted")
     end
@@ -127,7 +131,7 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
     t = (0:N-1)/S # time samples: t = n/S
     
     Noise= 2.5*randn(size(t)) 
-    freq =(440 * 2^((midi-69)/12)) * 2^(float(octave)-1) # compute frequency from midi number - FIXED!
+    freq =(440 * 2^((midi-69)/12)) * 2^(float(octave)-2) # compute frequency from midi number - FIXED!
   
     f=F*freq #applies frequency to harmonics
 
@@ -175,8 +179,10 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
     
     if c==Flutec #Appends to the indiviual song vectors
         global Fsong= [Fsong ; Music] #Flute
+        global FNotetype= [FNotetype; Notetype]
     elseif c==Clarc
         global Csong= [Csong ; Music] #Clarinet
+        global CNotetype = [CNotetype; Notetype]
     else
         println("Invalid Instrument selected")
     end
@@ -231,6 +237,38 @@ FHi=10000
 CLo=50
 CHi=600
 
+#delete function
+function delete_clicked(Insturment::Int64)
+    if Insturment==1 #if the current instrument selection is a flute
+        if length(Fsong)==0 
+            println("Song empty")
+        else
+            global FNotetype
+            Note=FNotetype[length(FNotetype)]
+            N = Int(floor(Note * S / BPS))
+            global Fsong
+            SLength=length(Fsong)
+
+            global Fsong=deleteat!(Fsong, (SLength-N+1):SLength )
+            pop!(FNotetype)
+        end
+    elseif Insturment==2 #if the current insturment selection is a clarinet 
+        if length(Csong)==0 
+            println("Song empty")
+        else
+            global CNotetype
+            Note=CNotetype[length(CNotetype)]
+            N = Int(floor(Note * S / BPS))
+            global Csong
+            SLength=length(Csong)
+
+            global Csong=deleteat!(Csong,(SLength-N+1):SLength )
+            pop!(CNotetype)
+        end
+    else 
+        print("Please select an Insturment to delete a note")
+    end
+end
 
 
 
