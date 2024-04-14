@@ -1,8 +1,7 @@
 using Gtk
 using GTK3_jll
 using Plots
-include("Project_3_Synthesizer.Jl")
-#ADD IN INCLUDE FILE Name
+include(Project_3_Synthesizer.JL)
 
 #Grid decleration
 g = GtkGrid() # initialize a grid to hold buttons
@@ -24,17 +23,16 @@ g[1,1]=instrument #place the drop down box in the first row and first column of 
 
 # Function for the change in drop downs
 signal_connect(instrument, "changed") do widget, others...
-  global insidx = get_gtk_property(instrument, "active", Int) # get the active index
+  Inst_idx = get_gtk_property(instrument, "active", Int) # get the active index
   Instrument_choice = Gtk.bytestring( GAccessor.active_text(instrument) ) #get the string (insturment choice in array choices) corresponding to the index 
-  println("Active element is \"$Instrument_choice\" at index $insidx") #print in terminal which element and which string is active
-  #TO ADD: function call to the modeling function for selected insturment
+  println("Active element is \"$Instrument_choice\" at index $Inst_idx") #print in terminal which element and which string is active
 end
 #End of insturment drop down decleration
 
 
 #Note duration drop down decleration
 note = GtkComboBoxText() #create the drop down box
-choices = ["Note Duration", "Sixteenth", "Eigth", "Quarter","Half", "Whole"] #define options for the drop down
+choices = ["Note Duration", "Sixteenth", "Eigth", "Quarter","Half", "Whole", "Rest"] #define options for the drop down
 #for loop to put each option into the drop down box
 for choice in choices
   push!(note,choice)
@@ -44,10 +42,9 @@ g[1,2]=note #place the drop down in the first column and second row of the grid
 
 # Function for the change in drop downs
 signal_connect(note, "changed") do widget, others... 
-  global duridx = get_gtk_property(note, "active", Int) # get the active index
+  Dur_idx = get_gtk_property(note, "active", Int) # get the active index
   Duration_choice = Gtk.bytestring( GAccessor.active_text(note) ) #get the string (note choice in array choices) corresponding to the index
-  println("Active element is \"$Duration_choice\" at index $duridx") #print in terminal which element and which string is active
-  #TO ADD: function call to the modeling function for selected note duration
+  println("Active element is \"$Duration_choice\" at index $idx") #print in terminal which element and which string is active
 end
 #End of note duration drop down decleration
 
@@ -64,9 +61,9 @@ set_gtk_property!(Articulations,:active,0)
 g[1,3]=Articulations
 
 signal_connect(Articulations, "changed") do widget, others...
-  global artidx = get_gtk_property(Articulations, "active", Int)
+  Art_idx = get_gtk_property(Articulations, "active", Int)
   Articulation_choice = Gtk.bytestring( GAccessor.active_text(Articulations) ) 
-  println("Active element is \"$Articulation_choice\" at index $artidx")
+  println("Active element is \"$Articulation_choice\" at index $idx")
 end
 #End articulations drop down decleration
 
@@ -84,9 +81,18 @@ set_gtk_property!(Octave,:active,0)
 g[1,4]=Octave
 
 signal_connect(Octave, "changed") do widget, others...
-    global octidx = get_gtk_property(Octave, "active", Int)
+    Oct_idx = get_gtk_property(Octave, "active", Int)
     Octave_choice = Gtk.bytestring( GAccessor.active_text(Octave) ) 
-    println("Active element is \"$Octave_choice\" at index $octidx")
+    println("Active element is \"$Octave_choice\" at index $idx")
+   if Ocatve_choice=="Up"
+      {
+        signal_connect(down_button_clicked)
+      }
+    else if Ocatve_choice=="Down"
+      {
+        signal_connect(up_button_clicked)
+      }
+      
 end
 #End Octave drop down decleration
 
@@ -99,8 +105,8 @@ virbratoslide=GtkScale(false, 0:100) #create the slider
 
 #Function to get the value of the slider
 signal_connect(virbratoslide, "value-changed") do widget, others...
-    global Virbratospeed_value = GAccessor.value(virbratoslide) #get the numeric value the slider is currently at
-    println("slider value is $Virbratospeed_value") #print the slider value to the terminal
+    Virbratospeed_value = GAccessor.value(virbratoslide) #get the numeric value the slider is currently at
+    println("slider value is $Virbrato_value") #print the slider value to the terminal
     #TO ADD: Function call for adding virbrato
 end
   
@@ -115,7 +121,7 @@ virbratovslide=GtkScale(false, 0:10) #create the slider
 
 #Function to get the value of the slider
 signal_connect(virbratovslide, "value-changed") do widget, others...
-    global Virbratov_value = GAccessor.value(virbratovslide) #get the numeric value the slider is currently at
+    Virbratov_value = GAccessor.value(virbratovslide) #get the numeric value the slider is currently at
     println("slider value is $Virbratov_value") #print the slider value to the terminal
     #TO ADD: Function call for adding virbrato
 end
@@ -133,7 +139,7 @@ g[1,7]=Tremolor
 tremolorslide=GtkScale(false, 0:4)
 
 signal_connect(tremolorslide, "value-changed") do widget, others...
-    global Tremolor_value = GAccessor.value(tremolorslide)
+    Tremolor_value = GAccessor.value(tremolorslide)
     println("slider value is $Tremolor_value")
 end
   
@@ -150,7 +156,7 @@ g[1,8]=tremolo
 tremoloslide=GtkScale(false, 0:10)
 
 signal_connect(tremoloslide, "value-changed") do widget, others...
-  global Tremolo_value = GAccessor.value(tremoloslide)
+  Tremolo_value = GAccessor.value(tremoloslide)
   println("slider value is $Tremolo_value")
 end
 
@@ -168,36 +174,6 @@ push!(GAccessor.style_context(delete),GtkStyleProvider(deletebutton),600) #apply
 #End delete button decleration
 
 
-
-
-function Play_button_clicked(w) # callback function for "end" button
-  println("The play button")
-  global Fsong
-
-  global Csong
-
-  global FinFsong= Fsong #ddeclaring final song vectors
-  global FinCsong= Csong
-
-  Fsize=length(Fsong) #getting length of Song vectors
-  Csize=length(Csong)
-  I=Fsize
-  if I<Csize #making song vectors equal length
-      I=Csize
-      addzero=Csize-Fsize
-      addedzeros=zeros(addzero, 1)
-      FinFsong=[FinFsong; addedzeros]
-  elseif I> Csize
-      addzero=Fsize-Csize
-      addedzeros=zeros(addzero, 1)
-      FinCsong=[FinCsong; addedzeros]
-  elseif I==Csize
-  end
-  song= FinFsong.+FinCsong #adding song vectors together
-  soundsc(song, S) # play the entire song when user clicks "end"
-  Song=song./100 #adjusts volume for output
-  wavwrite(Song,"Proj3audio.WAV"; Fs=44400) # save song to file
-end
 #Play button decleration
 #This button follows the same format as the delete button only with changed variable names 
 #See comments on delete button for what each line does
@@ -205,8 +181,7 @@ play=GtkButton("Play")
 playbutton=GtkCssProvider(data="#eb {color:white; background:green;}")
 g[1,10]=play
 set_gtk_property!(play, :name, "eb")
-signal_connect(Play_button_clicked, play, "clicked")
-#add in function to recgonize when the delete button is pressed
+#signal_connect(end_button_clicked,play,"clicked")
 push!(GAccessor.style_context(play),GtkStyleProvider(playbutton),600)
 #End play button decleration
 
@@ -221,7 +196,7 @@ black = ["F" 2 66; "G" 4 68; "A" 8 70; "C" 10 73; "D" 12 75] #array containing e
 for i in 1:size(white, 1) # add the white keys to the grid
   Name, col, midi = white[i, 1:3] 
   b = GtkButton(Name) # make a button for current key
-  signal_connect((w) -> miditone(midi, insidx, artidx, Virbratov_value, Virbratospeed_value, Tremolor_value, Tremolo_value, duridx, octidx), b, "clicked")#Should be able to pass things into the other function
+  #signal_connect((w) -> miditone(midi,Inst_idx,Evnindex,), b, "clicked")#Fix this line to pass in proper things
   g[1 .+ (1:2) .+ 2*(i-1), (6:10)] = b # put the button in rows 6 through 9 of the grid
 end
 
@@ -230,7 +205,7 @@ for i in 1:size(black,1) # add the black keys to the grid
   b = GtkButton(key * "♯") #make a button for current key
   push!(GAccessor.style_context(b), GtkStyleProvider(sharpbutton), 600) #apply the style to the key 
   set_gtk_property!(b, :name, "wb") # set "style" of black key
-  signal_connect((w) -> miditone(midi, insidx, artidx, Virbratov_value, Virbratospeed_value, Tremolor_value, 2.0, duridx, octidx), b, "clicked")#Should be able to pass things into the other function
+  #signal_connect((w) -> miditone(midi), b, "clicked") #Fix this line to pass in proper things 
   g[start .+ (0:1) .+ 1, (1:5)] = b # put the button in rows 1 through 5 of the grid
   end
 
