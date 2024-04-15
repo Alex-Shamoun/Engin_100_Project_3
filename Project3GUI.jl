@@ -31,7 +31,6 @@ signal_connect(instrument, "changed") do widget, others...
   global insidx = get_gtk_property(instrument, "active", Int) # get the active index
   Instrument_choice = Gtk.bytestring( GAccessor.active_text(instrument) ) #get the string (insturment choice in array choices) corresponding to the index 
   println("Active element is \"$Instrument_choice\" at index $insidx") #print in terminal which element and which string is active
-  #TO ADD: function call to the modeling function for selected insturment
 end
 #End of insturment drop down decleration
 
@@ -51,7 +50,6 @@ signal_connect(note, "changed") do widget, others...
   global duridx = get_gtk_property(note, "active", Int) # get the active index
   Duration_choice = Gtk.bytestring( GAccessor.active_text(note) ) #get the string (note choice in array choices) corresponding to the index
   println("Active element is \"$Duration_choice\" at index $duridx") #print in terminal which element and which string is active
-  #TO ADD: function call to the modeling function for selected note duration
 end
 #End of note duration drop down decleration
 
@@ -105,7 +103,6 @@ virbratoslide=GtkScale(false, 0:100) #create the slider
 signal_connect(virbratoslide, "value-changed") do widget, others...
     global Virbratospeed_value = GAccessor.value(virbratoslide) #get the numeric value the slider is currently at
     println("slider value is $Virbratospeed_value") #print the slider value to the terminal
-    #TO ADD: Function call for adding virbrato
 end
   
 g[1,5]=virbratoslide #place the slider in column one row five of the grid
@@ -121,7 +118,6 @@ virbratovslide=GtkScale(false, 0:10) #create the slider
 signal_connect(virbratovslide, "value-changed") do widget, others...
     global Virbratov_value = GAccessor.value(virbratovslide) #get the numeric value the slider is currently at
     println("slider value is $Virbratov_value") #print the slider value to the terminal
-    #TO ADD: Function call for adding virbrato
 end
   
 g[1,6]=virbratovslide #place the slider in column one row five of the grid
@@ -202,6 +198,7 @@ function Play_button_clicked(w) # callback function for "end" button
   Song=song./100 #adjusts volume for output
   wavwrite(Song,"Proj3audio.WAV"; Fs=44400) # save song to file
 end
+
 #Play button decleration
 #This button follows the same format as the delete button only with changed variable names 
 #See comments on delete button for what each line does
@@ -210,7 +207,6 @@ playbutton=GtkCssProvider(data="#eb {color:white; background:green;}")
 g[1,10]=play
 set_gtk_property!(play, :name, "eb")
 signal_connect(Play_button_clicked, play, "clicked")
-#add in function to recgonize when the delete button is pressed
 push!(GAccessor.style_context(play),GtkStyleProvider(playbutton),600)
 #End play button decleration
 
@@ -218,7 +214,7 @@ push!(GAccessor.style_context(play),GtkStyleProvider(playbutton),600)
 #Keyboard decleration
 sharpbutton= GtkCssProvider(data="#wb {color:white; background:black;}") #set style for sharp keys
 
-white=["F" 2 65; "G" 4 67; "A" 6 69; "B" 8 71; "C" 10 72; "D" 12 74; "E" 14 76] #array contaning each note's name and its column position
+white=["F" 2 65; "G" 4 67; "A" 6 69; "B" 8 71; "C" 10 72; "D" 12 74; "E" 14 76; "Rest" 16 0] #array contaning each note's name and its column position
 black = ["F" 2 66; "G" 4 68; "A" 8 70; "C" 10 73; "D" 12 75] #array containing each sharp's name and its column position
 
 
