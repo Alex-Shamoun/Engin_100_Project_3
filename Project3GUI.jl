@@ -37,7 +37,7 @@ end
 
 #Note duration drop down decleration
 note = GtkComboBoxText() #create the drop down box
-choices = ["Note Duration", "Sixteenth", "Eigth", "Quarter","Half", "Whole", "Rest"] #define options for the drop down
+choices = ["Note Duration", "Sixteenth", "Eigth", "Quarter","Half", "Whole"] #define options for the drop down
 #for loop to put each option into the drop down box
 for choice in choices
   push!(note,choice)
@@ -170,35 +170,6 @@ push!(GAccessor.style_context(delete),GtkStyleProvider(deletebutton),600) #apply
 
 
 
-function Play_button_clicked(w) # callback function for "end" button
-  println("The play button")
-  global Fsong
-
-  global Csong
-
-  global FinFsong= Fsong #ddeclaring final song vectors
-  global FinCsong= Csong
-
-  Fsize=length(Fsong) #getting length of Song vectors
-  Csize=length(Csong)
-  I=Fsize
-  if I<Csize #making song vectors equal length
-      I=Csize
-      addzero=Csize-Fsize
-      addedzeros=zeros(addzero, 1)
-      FinFsong=[FinFsong; addedzeros]
-  elseif I> Csize
-      addzero=Fsize-Csize
-      addedzeros=zeros(addzero, 1)
-      FinCsong=[FinCsong; addedzeros]
-  elseif I==Csize
-  end
-  song= FinFsong.+FinCsong #adding song vectors together
-  soundsc(song, S) # play the entire song when user clicks "end"
-  Song=song./100 #adjusts volume for output
-  wavwrite(Song,"Proj3audio.WAV"; Fs=44400) # save song to file
-end
-
 #Play button decleration
 #This button follows the same format as the delete button only with changed variable names 
 #See comments on delete button for what each line does
@@ -214,8 +185,8 @@ push!(GAccessor.style_context(play),GtkStyleProvider(playbutton),600)
 #Keyboard decleration
 sharpbutton= GtkCssProvider(data="#wb {color:white; background:black;}") #set style for sharp keys
 
-white=["F" 2 65; "G" 4 67; "A" 6 69; "B" 8 71; "C" 10 72; "D" 12 74; "E" 14 76; "Rest" 16 0] #array contaning each note's name and its column position
-black = ["F" 2 66; "G" 4 68; "A" 8 70; "C" 10 73; "D" 12 75] #array containing each sharp's name and its column position
+white=["F" 2 65; "G" 4 67; "A" 6 69; "B" 8 71; "C" 10 72; "D" 12 74; "E" 14 76; "Rest" 16 -70] #array contaning each note's name and its column position
+black = ["F" 2 66; "G" 4 68; "A" 6 70; "C" 10 73; "D" 12 75] #array containing each sharp's name and its column position
 
 
 for i in 1:size(white, 1) # add the white keys to the grid

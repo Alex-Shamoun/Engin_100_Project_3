@@ -150,7 +150,9 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
     end
 
     
-    
+    if midi==-70
+        Noise=0
+    end
     x = z.+ Noise #applies noise which we pass in
 
     Duration=BPS*Notetype/4 #duration of note
@@ -269,6 +271,38 @@ for i in 1:size(black,1) # add the black keys to the grid
     signal_connect((w) -> miditone(midi, "Flute", 1, 2.0, 3.0, 4.0, 2.0), b, "clicked") # callback
     g[start .+ (0:1), 1] = b # put the button in row 1 of the grid
 end
+
+
+
+function Play_button_clicked(w) # callback function for "end" button
+    println("The play button")
+    global Fsong
+  
+    global Csong
+  
+    global FinFsong= Fsong #ddeclaring final song vectors
+    global FinCsong= Csong
+  
+    Fsize=length(Fsong) #getting length of Song vectors
+    Csize=length(Csong)
+    I=Fsize
+    if I<Csize #making song vectors equal length
+        I=Csize
+        addzero=Csize-Fsize
+        addedzeros=zeros(addzero, 1)
+        FinFsong=[FinFsong; addedzeros]
+    elseif I> Csize
+        addzero=Fsize-Csize
+        addedzeros=zeros(addzero, 1)
+        FinCsong=[FinCsong; addedzeros]
+    elseif I==Csize
+    end
+    song= FinFsong.+FinCsong #adding song vectors together
+    soundsc(song, S) # play the entire song when user clicks "end"
+    Song=song./100 #adjusts volume for output
+    wavwrite(Song,"Proj3audio.WAV"; Fs=44400) # save song to file
+  end
+  
 
 
 function end_button_clicked(w) # callback function for "end" button
