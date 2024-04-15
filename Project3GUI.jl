@@ -94,7 +94,7 @@ end
 
 
 #Virbrato slider decleration
-virbrato=GtkLabel("Virbrato Speed") #create a label for the slider
+virbrato=GtkLabel("Vibrato Speed") #create a label for the slider
 g[1,5]=virbrato #place the label in column one row five of the grid
   
 virbratoslide=GtkScale(false, 0:100) #create the slider
@@ -109,7 +109,7 @@ g[1,5]=virbratoslide #place the slider in column one row five of the grid
 #End virbrato slider decleration
 
 #Virbrato slider decleration
-virbratov=GtkLabel("Virbrato Value") #create a label for the slider
+virbratov=GtkLabel("Vibrato Value") #create a label for the slider
 g[1,6]=virbratov #place the label in column one row five of the grid
   
 virbratovslide=GtkScale(false, 0:10) #create the slider
