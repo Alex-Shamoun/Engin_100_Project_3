@@ -52,51 +52,6 @@ function NoiseY(noise::Vector, lo::Int64, hi::Int64)
 end
 
 
-
-#Commenting out the old functions
-#=
-
-function Flute_audio(midi::Int64)
-
-    freq =(440 * 2^((midi-69)/12)) * 2^(float(octave) - 4) # compute frequency from midi number - FIXED!
-   
-    c = [0.21, 0.14, 0.07, 0.045, 0.02]*5 # amplitudes# amplitudes
-    f= [1, 2, 3, 4, 5] *freq #creating the frequency values
-    z = cos.(2π * t * f') # generating the rough wave
-
-    
-    
-    x = (z * c).+FNoise # applying the noise to the wave, and the amplitudes
-
-    duration=BPS*Notetype/4 #duration of note
-    adsr_time = [0,0.1, 0.2, 0.5, 0.6, 0.7, 0.9, 0.95, 1] * duration # time values for the envelope
-    adsr_vals = [0,0.6,  0.9, 0.8,0.7, 0.4, 0.2, 0.05,0] #percentage height values for the envelope
-
-    env = interp1(adsr_time, adsr_vals, t) # !!
-    y = env .* x   
-    soundsc(y, S)
-    global song = [song; y]
-end
-
-function Clarinet_audio(midi::Int64)
-    freq =(440 * 2^((midi-69)/12)) * 2^(float(octave) - 4) # compute frequency from midi number - FIXED!
-    f= [1,2,3,4,5,6,7] *freq
-    N = Int(Notetype * S / BPS) # 0.5 sec
-    t = (0:N-1)/S # time samples: t = n/S
-    z = sin.(2π * t * f'*2^(0/12)).+0.01*randn(size(t))
-    c = [0.9,0.05, 0.4, 0.04, 0.07, 0.03, 0.04]  # amplitudes
-    x = z * c
-    env = (1 .- exp.(-3t)) # slow attack; slow decay
-    env2=(1.1 .- exp.(-7*t))
-    Clar = env .* x .*reverse(env2)
-    soundsc(Clar, S)# play note so that user can hear it immediately
-    global song = [song; Clar]
-end
-=#
-
-
-
-
 function miditone(midi::Int64, Instrument::Int64, Envindex::Int64, Vibamt::Float64, vibSpd::Float64, Tamt::Float64, Trate::Float64, Notetype::Int64, Octave::Int64) 
     if Instrument==1
         x=Audio(midi, Flutef, Flutec, Envindex, Vibamt, vibSpd, Tamt, Trate, Notetype, Octave )
