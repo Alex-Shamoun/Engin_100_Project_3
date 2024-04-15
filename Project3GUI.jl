@@ -1,13 +1,8 @@
-
-
-
-
-
 using Gtk
 using GTK3_jll
 using Plots
 include("Project_3_Synthesizer.Jl")
-#ADD IN INCLUDE FILE Name
+
 
 #Grid decleration
 g = GtkGrid() # initialize a grid to hold buttons
@@ -19,7 +14,6 @@ Virbratov_value = 0.0
 Virbratospeed_value =0.0
 Tremolor_value= 0.0
 Tremolo_value=0.0
-
 
 
 #Instrument drop down decleration
@@ -44,7 +38,7 @@ end
 
 #Note duration drop down decleration
 note = GtkComboBoxText() #create the drop down box
-choices = ["Note Duration", "Sixteenth", "Eigth", "Quarter","Half", "Whole"] #define options for the drop down
+choices = ["Note Duration", "Sixteenth", "Eigth", "Quarter","Half", "Whole", "Rest"] #define options for the drop down
 #for loop to put each option into the drop down box
 for choice in choices
   push!(note,choice)
