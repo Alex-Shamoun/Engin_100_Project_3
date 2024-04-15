@@ -20,8 +20,8 @@ NomETime = [0,0.1, 0.2, 0.5, 0.6, 0.7, 0.9, 1] #normal Envelope
 NomEValue = [0,0.6,  0.9, 0.8,0.7, 0.4, 0.2, 0]
 
 
-StacETime = [0,0.02, 0.05, 0.13, 0.2, 0.23, 0.27] #Staccato Envelope
-StacEValue = [0,0.6, 1, 0.6,0.4, 0.1, 0]
+StacETime = [0,0.03, 0.08, 0.10,0.13, 0.2, 0.23, 0.27, 0.35] #Staccato Envelope
+StacEValue = [0,0.6, 1, 0.8,0.6,0.4, 0.2, 0.1, 0]
 
 
 #Declaring Flute values

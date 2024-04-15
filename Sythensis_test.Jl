@@ -19,7 +19,7 @@ using DSP
 
 #creating model of flute
 S = 44100
-N = Int(2 * S) # 0.5 sec
+N = Int(1 * S) # 0.5 sec
 t = (0:N-1)/S # time samples: t = n/S
 #c = [0.21, 0.14, 0.07, 0.045, 0.02, 0.002, 0.0015, 0.001 ]*100 # amplitudes
 
@@ -52,7 +52,7 @@ x = (z * c).+Noise # applying the noise to the wave, and the amplitudes
 
 #time=(4*10^4):t
 env = (1.05 .- exp.(-6*t)) # fast attack; slow decay
-duration=2
+duration=1
 adsr_time = [0,0.1, 0.2, 0.5, 0.6, 0.7, 0.9, 1] * duration
 adsr_vals = [0,0.6,  0.9, 0.8,0.7, 0.4, 0.2, 0]
 
@@ -91,16 +91,16 @@ xlims!(1, 200)
 
 
 S = 44100
-N = Int(2 * S) # 0.5 sec
+N = Int(1 * S) # 0.5 sec
 t = (0:N-1)/S # time samples: t = n/S
-c = [0.9,0.05, 0.4, 0.04, 0.07, 0.03, 0.04] # amplitudes
+c = [0.9,0.05, 0.4, 0.04, 0.07, 0.03, 0.04]*100 # amplitudes
 # f = [526.205, 1051.5, 1579.7, 2103.2, 2633.1] # frequencies
 f= [1, 2, 3, 4, 5, 6, 7] *440
 z = sin.(2π * t * f'*2^(0/12))
 
 
 
-CNoise=0.005*randn(size(t))
+CNoise=0.005*randn(size(t))*100
 #Clarinet Noise
 lo=50
 hi=600
@@ -132,8 +132,15 @@ plot(Clar)
 #Vibrato
 
 
+#stacato envelope
+adsr_time = [0,0.02, 0.05, 0.13, 0.2, 0.23, 0.27] * duration
+adsr_vals = [0,0.6, 1, 0.6,0.4, 0.1, 0]
+
+Stacenv = interp1(adsr_time, adsr_vals, t) # !!
+
+
 S = 44100
-N = Int(2 * S)
+N = Int(1 * S)
 t = (0:N-1)/S
 c = [0.21, 0.14, 0.07, 0.045, 0.02]*100 # amplitudes
 f= [1, 2, 3, 4, 5] *440*2^(0/12)
@@ -145,14 +152,14 @@ y = +([c[k] * sin.(2π * f[k] * t + f[k] * lfo) for k in 1:length(c)]...)
 
 x = y.+Noise # applying the noise to the wave, and the amplitudes
 z = env .* x
-#soundsc(z, S)
+soundsc(z, S)
 
 
 
 Tremlfo = 0.7 .- 0.2 * cos.(2π*6*t) # what frequency?
 y = Tremlfo .* z
 soundsc(y, S)
-plot(y)
+plot(x)
 
 
 
