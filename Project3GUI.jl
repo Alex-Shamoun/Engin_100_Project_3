@@ -58,7 +58,7 @@ end
 #This drop down decleration follows the same format as the previous two only with changed variable names 
 #See comments on note and instrument decleration for what each line does
 Articulations = GtkComboBoxText() 
-choices = ["Articulations", "Staccato", "No Articulation"]
+choices = ["Articulations", "Staccato", "Standard"]
 for choice in choices
   push!(Articulations,choice)
 end
@@ -77,7 +77,7 @@ end
 #This drop down decleration follows the same format as the previous two only with changed variable names 
 #See comments on note and instrument decleration for what each line does
 Octave = GtkComboBoxText()
-choices = ["Octave", "Down", "Standard","Up"]
+choices = ["Octave", "A3", "A4","A5", "A6"]
 for choice in choices
   push!(Octave,choice)
 end
@@ -184,7 +184,7 @@ push!(GAccessor.style_context(play),GtkStyleProvider(playbutton),600)
 #Keyboard decleration
 sharpbutton= GtkCssProvider(data="#wb {color:white; background:black;}") #set style for sharp keys
 
-white=["F" 2 65; "G" 4 67; "A" 6 69; "B" 8 71; "C" 10 72; "D" 12 74; "E" 14 76; "Rest" 16 0] #array contaning each note's name and its column position
+white=["F" 2 65; "G" 4 67; "A" 6 69; "B" 8 71; "C" 10 72; "D" 12 74; "E" 14 76; "Rest" 16 -70] #array contaning each note's name and its column position
 black = ["F" 2 66; "G" 4 68; "A" 6 70; "C" 10 73; "D" 12 75] #array containing each sharp's name and its column position
 
 
@@ -210,3 +210,17 @@ for i in 1:size(black,1) # add the black keys to the grid
 win = GtkWindow("Orchestral Synthesizer",400,300) #define the pop up window by setting the title and size  (pixel by pixel)
 push!(win, g) #push the grid into the window
 showall(win) #show the window
+println("----------------------------------------------------------------------------------------------------------------")
+println("Welcome to our Synthesizer, this is the tutorial to guide you in utilizing our synth.")
+println("First you select an instrument, note duration, articualtion type, and octave. Currently we only have 2 instruments possible to generate.")
+println("After you get all of those selected, then you are free to adjust the vibrato and tremolo values as you see fit.")
+println("Vibrato ammount represents the ammount of frequency in Hz that you are adjusting the pitch by.")
+println("Tremolo ammount represents the depth of the tremolo in how")
+println("much the volume (the envelope) is adjusted on a scale from 0-80%.")
+println("For the vibrato and tremolo speed, these valuese represent how fast the tremolo and vibrato occur, ie the rate at which the envelope and frequency change.")
+println("Generally it is suggested to not go above 50 for vibrato speed, 3 for tremolo ammount, or 8 for tremolo speed as then the results end up sounding non-realistic.")
+println("Next is the keyboard. This is a 1 octave keyboard with a rest button at the end, which utilizes the currently selected note duration as the rest duration.")
+println("to change the octave of the keyboard just adjust the octave selected in the octave drop down menu.")
+println("Be warned, synth may lose realisim the further that you go from the normal operating range of the instruments provided.")
+println("Enjoy!")
+println("----------------------------------------------------------------------------------------------------------------")

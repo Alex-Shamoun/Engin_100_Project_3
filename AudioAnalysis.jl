@@ -2,7 +2,7 @@ using FFTW
 using Plots
 using WAV
 
-file = "/Users/comradereznov/Documents/VS_Code/Engin_100/Engin_100_Project_3/FluteA4.wav" # adjust as needed
+file = "Proj3audio.WAV" # adjust as needed
 (z, S) = wavread(file)
 #sound(z, S) # uncomment this to hear a heresy
 N = length(z)
@@ -13,7 +13,7 @@ xlims!(1,5*10^4)
 
 
 
-savefig("/Users/comradereznov/Documents/VS_Code/Engin_100/Engin_100_Project_3/Spectrum.png")
+savefig("Spectrum.png")
 
 
 # k=findall(2/N*abs.(Z) .>0.0001)

@@ -26,11 +26,11 @@ StacEValue = [0,0.6, 1, 0.8,0.6,0.4, 0.2, 0.1, 0]
 
 #Declaring Flute values
 
-Flutec = [0.21, 0.14, 0.07, 0.045, 0.02]*100 # amplitudes
-Flutef= [1, 2, 3, 4, 5]
+Flutec = [0.21, 0.14, 0.07, 0.045, 0.02, 0.02/5, 0.002/10]*100 # amplitudes
+Flutef= [1, 2, 3, 4, 5, 6, 7]
 
 #clarinet values
-Clarc = [0.9,0.05, 0.4, 0.04, 0.07, 0.03, 0.04]*100 # amplitudes
+Clarc = [0.9,0.01, 0.2, 0.03, 0.02, 0.015, 0.015]*100 # amplitudes
 Clarf= [1, 2, 3, 4, 5, 6, 7]
 
 
@@ -87,7 +87,9 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
     
     Noise= 2.5*randn(size(t)) 
     freq =(440 * 2^((midi-69)/12)) * 2^(float(octave)-2) # compute frequency from midi number - FIXED!
-  
+    if midi==-70
+        freq=0
+    end
     f=F*freq #applies frequency to harmonics
 
     #Vibrato
@@ -97,7 +99,7 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
     
     #Generating Noise
     if c==Flutec #Appends to the indiviual song vectors
-        Noise=NoiseY(Noise, FLo, FHi) #Flute Noise
+        Noise=0.8*NoiseY(Noise, FLo, FHi) #Flute Noise
     elseif c==Clarc
         Noise=NoiseY(Noise, CLo, CHi) #Clarinet Noise
     else
