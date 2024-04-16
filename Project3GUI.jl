@@ -94,7 +94,7 @@ end
 
 
 #Virbrato slider decleration
-virbrato=GtkLabel("Virbrato Speed") #create a label for the slider
+virbrato=GtkLabel("Vibrato Speed") #create a label for the slider
 g[1,5]=virbrato #place the label in column one row five of the grid
   
 virbratoslide=GtkScale(false, 0:100) #create the slider
@@ -109,7 +109,7 @@ g[1,5]=virbratoslide #place the slider in column one row five of the grid
 #End virbrato slider decleration
 
 #Virbrato slider decleration
-virbratov=GtkLabel("Virbrato Value") #create a label for the slider
+virbratov=GtkLabel("Vibrato Value") #create a label for the slider
 g[1,6]=virbratov #place the label in column one row five of the grid
   
 virbratovslide=GtkScale(false, 0:10) #create the slider
@@ -169,7 +169,6 @@ push!(GAccessor.style_context(delete),GtkStyleProvider(deletebutton),600) #apply
 
 
 
-
 #Play button decleration
 #This button follows the same format as the delete button only with changed variable names 
 #See comments on delete button for what each line does
@@ -185,7 +184,7 @@ push!(GAccessor.style_context(play),GtkStyleProvider(playbutton),600)
 #Keyboard decleration
 sharpbutton= GtkCssProvider(data="#wb {color:white; background:black;}") #set style for sharp keys
 
-white=["F" 2 65; "G" 4 67; "A" 6 69; "B" 8 71; "C" 10 72; "D" 12 74; "E" 14 76; "Rest" 16 -70] #array contaning each note's name and its column position
+white=["F" 2 65; "G" 4 67; "A" 6 69; "B" 8 71; "C" 10 72; "D" 12 74; "E" 14 76; "Rest" 16 0] #array contaning each note's name and its column position
 black = ["F" 2 66; "G" 4 68; "A" 6 70; "C" 10 73; "D" 12 75] #array containing each sharp's name and its column position
 
 
