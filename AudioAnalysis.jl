@@ -8,7 +8,7 @@ file = "Proj3audio.WAV" # adjust as needed
 N = length(z)
 Z = fft(z)
 plot(2/N * abs.(Z), xlims=(1,N/2+1), xlabel="frequency index l=k+1", ylabel="Z[l]", plot_title="5.4 Raw Spectrum with mixed songs")
-xlims!(1,5*10^4)
+xlims!(1,1*10^4)
 
 
 

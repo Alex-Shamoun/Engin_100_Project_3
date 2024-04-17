@@ -127,7 +127,7 @@ g[1,6]=virbratovslide #place the slider in column one row five of the grid
 #tremolo rate slider decleration
 #This slider follows the same format as the virbrato slider only with changed variable names 
 #See comments on virbrato slider for what each line does
-Tremolor=GtkLabel("Tremolo Rate")
+Tremolor=GtkLabel("Tremolo Ammount")
 g[1,7]=Tremolor
 
 tremolorslide=GtkScale(false, 0:4)
@@ -144,7 +144,7 @@ g[1,7]=tremolorslide
 #Tremolo slider decleration
 #This slider follows the same format as the virbrato slider only with changed variable names 
 #See comments on virbrato slider for what each line does
-tremolo=GtkLabel("Tremolo Value")
+tremolo=GtkLabel("Tremolo Speed")
 g[1,8]=tremolo
 
 tremoloslide=GtkScale(false, 0:10)
