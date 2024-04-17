@@ -26,11 +26,11 @@ StacEValue = [0,0.6, 1, 0.8,0.6,0.4, 0.2, 0.1, 0]
 
 #Declaring Flute values
 
-Flutec = [0.21, 0.14, 0.07, 0.045, 0.02, 0.02/5, 0.02/10]*100 # amplitudes
+Flutec = [0.21, 0.14, 0.07, 0.045, 0.02, 0.02/5, 0.02/10]*80 # amplitudes
 Flutef= [1, 2, 3, 4, 5, 6, 7]
 
 #clarinet values
-Clarc = [0.9,0.01, 0.2, 0.03, 0.02, 0.015, 0.015]*100 # amplitudes
+Clarc = [0.8,0.02, 0.13, 0.03, 0.02, 0.01, 0.01]*120 # amplitudes
 Clarf= [1, 2, 3, 4, 5, 6, 7]
 
 
@@ -57,6 +57,8 @@ function miditone(midi::Int64, Instrument::Int64, Envindex::Int64, Vibamt::Float
         x=Audio(midi, Flutef, Flutec, Envindex, Vibamt, vibSpd, Tamt, Trate, Notetype, Octave )
     elseif Instrument==2
         C=Audio(midi, Clarf, Clarc, Envindex, Vibamt, vibSpd, Tamt, Trate, Notetype, Octave )
+    else
+        println("Invalid Instrument Selected")
     end
     #calls the audio function depending on what instrument we are playing
     return nothing
@@ -66,6 +68,7 @@ end
 
 function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int64, Vibamt::Float64, Vibspd::Float64, Tamt::Float64, Trate::Float64, Notetype::Int64, octave::Int64)
     #converts note type into the relative notetype for usage
+
     if Notetype==1
         Notetype=1/4 #sixteenth
     elseif Notetype==2
@@ -79,7 +82,8 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
     elseif Notetype==6
         Notetype=0 #Rest
     else
-        println("Invalid not duration selcted")
+        println("Invalid note duration selcted")
+        return nothing
     end
     
     N = Int(floor(Notetype * S / BPS)) # 0.5 sec
@@ -102,7 +106,7 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
         Noise=0.65*NoiseY(Noise, FLo, FHi) #Flute Noise
     elseif c==Clarc
         Noise=NoiseY(Noise, CLo, CHi) #Clarinet Noise
-    else
+    elseif c==[]
         println("Invalid Instrument selected")
     end
 
@@ -123,6 +127,11 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
     else 
         println("You have inputted an invalid articulation")
         env=zeros(size(t), 1)
+        return nothing
+    end
+    if octidx ==0
+        println("Invalid octave selected")
+        return nothing
     end
     env=interp1(Envtime,EnvVal,t) #this uses the envelope values chosen above to generate the envelope
 

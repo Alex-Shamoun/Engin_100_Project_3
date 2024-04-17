@@ -14,7 +14,10 @@ Virbratov_value = 0.0
 Virbratospeed_value =0.0
 Tremolor_value= 0.0
 Tremolo_value=0.0
-
+insidx=0
+xartidx=0
+duridx=0
+octidx=0
 
 #Instrument drop down decleration
 instrument = GtkComboBoxText() #create the drop down box

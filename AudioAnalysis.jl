@@ -7,8 +7,8 @@ file = "Proj3audio.WAV" # adjust as needed
 #sound(z, S) # uncomment this to hear a heresy
 N = length(z)
 Z = fft(z)
-plot(2/N * abs.(Z), xlims=(1,N/2+1), xlabel="frequency index l=k+1", ylabel="Z[l]", plot_title="5.4 Raw Spectrum with mixed songs")
-xlims!(1,1*10^4)
+plot(2/N * abs.(Z), xlims=(1,N/2+1), xlabel="frequency index l=k+1", ylabel="Z[l]", plot_title="A4 Synthesized Clarinet Spectrum")
+xlims!(1,0.8*10^4)
 
 
 
