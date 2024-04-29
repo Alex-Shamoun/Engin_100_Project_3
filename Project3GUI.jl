@@ -14,7 +14,10 @@ Virbratov_value = 0.0
 Virbratospeed_value =0.0
 Tremolor_value= 0.0
 Tremolo_value=0.0
-
+insidx=0
+xartidx=0
+duridx=0
+octidx=0
 
 #Instrument drop down decleration
 instrument = GtkComboBoxText() #create the drop down box
@@ -30,7 +33,7 @@ g[1,1]=instrument #place the drop down box in the first row and first column of 
 signal_connect(instrument, "changed") do widget, others...
   global insidx = get_gtk_property(instrument, "active", Int) # get the active index
   Instrument_choice = Gtk.bytestring( GAccessor.active_text(instrument) ) #get the string (insturment choice in array choices) corresponding to the index 
-  println("Active element is \"$Instrument_choice\" at index $insidx") #print in terminal which element and which string is active
+  #println("Active element is \"$Instrument_choice\" at index $insidx") #print in terminal which element and which string is active
 end
 #End of insturment drop down decleration
 
@@ -49,7 +52,7 @@ g[1,2]=note #place the drop down in the first column and second row of the grid
 signal_connect(note, "changed") do widget, others... 
   global duridx = get_gtk_property(note, "active", Int) # get the active index
   Duration_choice = Gtk.bytestring( GAccessor.active_text(note) ) #get the string (note choice in array choices) corresponding to the index
-  println("Active element is \"$Duration_choice\" at index $duridx") #print in terminal which element and which string is active
+  #println("Active element is \"$Duration_choice\" at index $duridx") #print in terminal which element and which string is active
 end
 #End of note duration drop down decleration
 
@@ -68,7 +71,7 @@ g[1,3]=Articulations
 signal_connect(Articulations, "changed") do widget, others...
   global artidx = get_gtk_property(Articulations, "active", Int)
   Articulation_choice = Gtk.bytestring( GAccessor.active_text(Articulations) ) 
-  println("Active element is \"$Articulation_choice\" at index $artidx")
+  #println("Active element is \"$Articulation_choice\" at index $artidx")
 end
 #End articulations drop down decleration
 
@@ -88,7 +91,7 @@ g[1,4]=Octave
 signal_connect(Octave, "changed") do widget, others...
     global octidx = get_gtk_property(Octave, "active", Int)
     Octave_choice = Gtk.bytestring( GAccessor.active_text(Octave) ) 
-    println("Active element is \"$Octave_choice\" at index $octidx")
+    #println("Active element is \"$Octave_choice\" at index $octidx")
 end
 #End Octave drop down decleration
 
@@ -102,7 +105,7 @@ virbratoslide=GtkScale(false, 0:100) #create the slider
 #Function to get the value of the slider
 signal_connect(virbratoslide, "value-changed") do widget, others...
     global Virbratospeed_value = GAccessor.value(virbratoslide) #get the numeric value the slider is currently at
-    println("slider value is $Virbratospeed_value") #print the slider value to the terminal
+    #println("slider value is $Virbratospeed_value") #print the slider value to the terminal
 end
   
 g[1,5]=virbratoslide #place the slider in column one row five of the grid
@@ -117,7 +120,7 @@ virbratovslide=GtkScale(false, 0:10) #create the slider
 #Function to get the value of the slider
 signal_connect(virbratovslide, "value-changed") do widget, others...
     global Virbratov_value = GAccessor.value(virbratovslide) #get the numeric value the slider is currently at
-    println("slider value is $Virbratov_value") #print the slider value to the terminal
+   # println("slider value is $Virbratov_value") #print the slider value to the terminal
 end
   
 g[1,6]=virbratovslide #place the slider in column one row five of the grid
@@ -127,14 +130,14 @@ g[1,6]=virbratovslide #place the slider in column one row five of the grid
 #tremolo rate slider decleration
 #This slider follows the same format as the virbrato slider only with changed variable names 
 #See comments on virbrato slider for what each line does
-Tremolor=GtkLabel("Tremolo Rate")
+Tremolor=GtkLabel("Tremolo Ammount")
 g[1,7]=Tremolor
 
 tremolorslide=GtkScale(false, 0:4)
 
 signal_connect(tremolorslide, "value-changed") do widget, others...
     global Tremolor_value = GAccessor.value(tremolorslide)
-    println("slider value is $Tremolor_value")
+   # println("slider value is $Tremolor_value")
 end
   
 g[1,7]=tremolorslide
@@ -144,14 +147,14 @@ g[1,7]=tremolorslide
 #Tremolo slider decleration
 #This slider follows the same format as the virbrato slider only with changed variable names 
 #See comments on virbrato slider for what each line does
-tremolo=GtkLabel("Tremolo Value")
+tremolo=GtkLabel("Tremolo Speed")
 g[1,8]=tremolo
 
 tremoloslide=GtkScale(false, 0:10)
 
 signal_connect(tremoloslide, "value-changed") do widget, others...
   global Tremolo_value = GAccessor.value(tremoloslide)
-  println("slider value is $Tremolo_value")
+  #println("slider value is $Tremolo_value")
 end
 
 g[1,8]=tremoloslide
