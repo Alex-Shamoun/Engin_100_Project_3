@@ -9,7 +9,6 @@ using FFTW
 
 # initialize two global variables used throughout
 S = 44400 # sampling rate (samples/second), 44400 was chosen to make sixteenth notes have an integer ammount of samples.
-S = 44400 # sampling rate (samples/second), 44400 was chosen to make sixteenth notes have an integer ammount of samples.
 song = Float32[] # initialize "song" as an empty vector
 Fsong = Float32[]
 Csong = Float32[]
@@ -22,18 +21,15 @@ NomEValue = [0,0.6,  0.9, 0.8,0.7, 0.4, 0.2, 0]
 
 
 StacETime = [0,0.03, 0.08, 0.11,0.14, 0.22, 0.25, 0.28, 0.35] #Staccato Envelope
-StacETime = [0,0.03, 0.08, 0.11,0.14, 0.22, 0.25, 0.28, 0.35] #Staccato Envelope
 StacEValue = [0,0.6, 1, 0.8,0.6,0.4, 0.2, 0.1, 0]
 
 
 #Declaring Flute values
 
 Flutec = [0.21, 0.14, 0.07, 0.045, 0.02, 0.02/5, 0.02/10]*80 # amplitudes
-Flutec = [0.21, 0.14, 0.07, 0.045, 0.02, 0.02/5, 0.02/10]*80 # amplitudes
 Flutef= [1, 2, 3, 4, 5, 6, 7]
 
 #clarinet values
-Clarc = [0.8,0.02, 0.13, 0.03, 0.02, 0.01, 0.01]*120 # amplitudes
 Clarc = [0.8,0.02, 0.13, 0.03, 0.02, 0.01, 0.01]*120 # amplitudes
 Clarf= [1, 2, 3, 4, 5, 6, 7]
 
@@ -63,8 +59,6 @@ function miditone(midi::Int64, Instrument::Int64, Envindex::Int64, Vibamt::Float
         C=Audio(midi, Clarf, Clarc, Envindex, Vibamt, vibSpd, Tamt, Trate, Notetype, Octave )
     else
         println("Invalid Instrument Selected")
-    else
-        println("Invalid Instrument Selected")
     end
     #calls the audio function depending on what instrument we are playing
     return nothing
@@ -74,7 +68,6 @@ end
 
 function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int64, Vibamt::Float64, Vibspd::Float64, Tamt::Float64, Trate::Float64, Notetype::Int64, octave::Int64)
     #converts note type into the relative notetype for usage
-
 
     if Notetype==1
         Notetype=1/4 #sixteenth
@@ -91,8 +84,6 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
     else
         println("Invalid note duration selcted")
         return nothing
-        println("Invalid note duration selcted")
-        return nothing
     end
     
     N = Int(floor(Notetype * S / BPS)) 
@@ -102,7 +93,6 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
     Noise= 2.5*randn(size(t)) 
     freq =(440 * 2^((midi-69)/12)) * 2^(float(octave)-2) # compute frequency from midi number - FIXED!
     if midi==-70
-        freq=0 #removes frequency for rest note
         freq=0 #removes frequency for rest note
     end
     f=F*freq #applies frequency to harmonics
@@ -115,10 +105,8 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
     #Generating Noise
     if c==Flutec #Appends to the indiviual song vectors
         Noise=0.65*NoiseY(Noise, FLo, FHi) #Flute Noise
-        Noise=0.65*NoiseY(Noise, FLo, FHi) #Flute Noise
     elseif c==Clarc
         Noise=NoiseY(Noise, CLo, CHi) #Clarinet Noise
-    elseif c==[]
     elseif c==[]
         println("Invalid Instrument selected")
     end
@@ -134,10 +122,8 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
     if Envindex ==2
         Envtime=NomETime*Duration
         EnvVal=NomEValue #normal envelope
-        EnvVal=NomEValue #normal envelope
     elseif Envindex==1
         Envtime=StacETime*Duration
-        EnvVal=StacEValue #staccato envelope
         EnvVal=StacEValue #staccato envelope
     else 
         println("You have inputted an invalid articulation")
@@ -147,14 +133,7 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
     if octidx ==0
         println("Invalid octave selected") #invalid octave (none chosen)
         return nothing
-        env=zeros(size(t), 1) 
-        return nothing
     end
-    if octidx ==0
-        println("Invalid octave selected") #invalid octave (none chosen)
-        return nothing
-    end
-
 
     env=interp1(Envtime,EnvVal,t) #this uses the envelope values chosen above to generate the envelope
 
@@ -162,7 +141,6 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
 
     #Generating Tremolo
     Tremlfo = (1-Tamt*0.1).- Tamt*0.1 * cos.(2π*Trate*t) # what frequency?
-    Music = Tremlfo .* Z #applies Tremolo to note
     Music = Tremlfo .* Z #applies Tremolo to note
 
     soundsc(Music, S)# play note so that user can hear it immediately
@@ -175,8 +153,6 @@ function Audio(midi::Int64, F::Vector{Int64}, c::Vector{Float64}, Envindex::Int6
         plot(Fsong, xlabel="Sample (N/S)", ylabel="Wave Amplitude", plot_title="Staccato Envelope")
         savefig("Envelope_3.png")
     elseif c==Clarc
-        global Csong= [Csong ; Music] #Saves note to Clarinet
-        global CNotetype = [CNotetype; Notetype] #saves note type
         global Csong= [Csong ; Music] #Saves note to Clarinet
         global CNotetype = [CNotetype; Notetype] #saves note type
     else
@@ -198,25 +174,18 @@ CHi=600
 function delete_clicked(Insturment::Int64)
     if Insturment==1 #if the current instrument selection is a flute
         if length(Fsong)==0 #checks if song is empty
-        if length(Fsong)==0 #checks if song is empty
             println("Song empty")
         else
             global FNotetype
             Note=FNotetype[length(FNotetype)] #gets the previous notetype
             N = Int(floor(Note * S / BPS)) #samples to remove
-            Note=FNotetype[length(FNotetype)] #gets the previous notetype
-            N = Int(floor(Note * S / BPS)) #samples to remove
             global Fsong
-            SLength=length(Fsong) 
             SLength=length(Fsong) 
 
             global Fsong=deleteat!(Fsong, (SLength-N+1):SLength )# removes the samples at the end to remove the last note
             pop!(FNotetype) #removes that note from the notetype vector
-            global Fsong=deleteat!(Fsong, (SLength-N+1):SLength )# removes the samples at the end to remove the last note
-            pop!(FNotetype) #removes that note from the notetype vector
         end
     elseif Insturment==2 #if the current insturment selection is a clarinet 
-        #same as the principles above
         #same as the principles above
         if length(Csong)==0 
             println("Song empty")
@@ -261,13 +230,6 @@ function Play_button_clicked(w) # callback function for "end" button
   song= FinFsong.+FinCsong #adding song vectors together
   soundsc(song, S) # play the entire song when user clicks "end"
   Song=song./100 #adjusts volume for output. This was done as it was outputting way too loud due to multipying by 100 earlier to make the values easier to work with.
-  Song=song./100 #adjusts volume for output. This was done as it was outputting way too loud due to multipying by 100 earlier to make the values easier to work with.
   wavwrite(Song,"Proj3audio.WAV"; Fs=44400) # save song to file
 
 end
-
-
-
-
-
-
