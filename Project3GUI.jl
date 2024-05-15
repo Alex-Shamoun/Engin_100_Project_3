@@ -19,6 +19,7 @@ xartidx=0
 duridx=0
 octidx=0
 
+#The commented out singal connect print statemetns were utilized for testing purposes but serve no technical purpose.
 #Instrument drop down decleration
 instrument = GtkComboBoxText() #create the drop down box
 choices = ["Insturment Selection", "Flute", "Clarinet"] #define options for the drop down
